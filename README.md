@@ -24,8 +24,9 @@
 1. 创建虚拟环境（自选) virtualenv -p python3 venv
 2. source venv/bin/active
 3. cd 到项目目录
-第一次运行 sudo ./install.sh
-第n次运行不包括1， sudo ./start.sh
+4. 运行 sudo ./install.sh
+5. 按照脚本操作后，将会部署到后台
+
 
 
 
