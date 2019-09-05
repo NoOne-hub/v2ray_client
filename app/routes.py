@@ -30,7 +30,7 @@ def get_status():
 
 
 def start():
-    subprocess.Popen(['service', 'v2ray', 'start'])
+    subprocess.Popen('service v2ray start', shell=True)
     return "OK"
 
 
@@ -40,7 +40,7 @@ def start():
 
 
 def stop():
-    subprocess.Popen(['service', 'v2ray', 'stop'])
+    subprocess.Popen('service v2ray stop', shell=True)
     return "OK"
 
 
@@ -50,7 +50,7 @@ def stop():
 
 
 def restart():
-    subprocess.Popen(['service', 'v2ray', 'restart'])
+    subprocess.Popen('service v2ray restart', shell=True)
     return "OK"
 
 
