@@ -303,8 +303,7 @@ def start_service():
     gen_client(json.loads(myjson))
     startConfig.status = "on"
     db.session.commit()
-
-    start()
+    restart()
     return "OK"
 
 
