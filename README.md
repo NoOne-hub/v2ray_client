@@ -28,6 +28,11 @@
 5. 按照脚本操作后，将会部署到后台
 
 
+## 启动停止方法
+1. 启动： supervisorctl start v2rayClient
+2. 停止: supervisortctl stop v2rayClient
+
+
 
 
 ## 配置方法
