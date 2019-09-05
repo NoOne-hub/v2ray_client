@@ -1,0 +1,2 @@
+FLASK_APP=v2rayClient.py
+FLASK_DEBUG=1

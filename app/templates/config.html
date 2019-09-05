@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="mdui-container">
+        <p></p>
+        <div class="mdui-row">
+            <div class="mdui-table-fluid">
+                <table class="mdui-table">
+                    <thead>
+                    <tr>
+                        <th>参数</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="remarks" class="mdui-textfield-input" type="text" placeholder="备注"
+                                           value="{% if v2ray %}{{ v2ray.remarks }}{% endif %}"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>地址</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="addr" class="mdui-textfield-input" type="text" placeholder="服务器ip"
+                                           value="{% if v2ray %}{{ v2ray.addr }}{% endif %}"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>服务器端口</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="port" class="mdui-textfield-input" type="text" placeholder="端口号"
+                                           value="{% if v2ray %}{{ v2ray.port }}{% endif %}"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="vmess-config">
+                        <td>UUID</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-6">
+                                    <input id="uuid" class="mdui-textfield-input" type="text" readonly="readonly"
+                                           value="{% if v2ray %}{{ v2ray.uuid }}{% else %}{% endif %}"/>
+                                </div>
+                                <div class="mdui-col-md-1" id="uuid_change" onclick="change_uuid()">
+                                    <button class="mdui-btn mdui-color-theme-accent mdui-ripple">
+                                        <i class="mdui-icon material-icons">autorenew</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>额外id</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="alterId" class="mdui-textfield-input" type="text" placeholder="id"
+                                           value="{% if v2ray %}{{ v2ray.alterId }}{% endif %}"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="vmess-config">
+                        <td>加密方式</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <form id="encrypt_form" action="##">
+                                        {% if v2ray.encrypt == "chacha20-poly1305" %}
+                                            <select name="encrypt" class="mdui-select" mdui-select>
+                                                <option id="auto" value="1"> auto (自动选择)</option>
+                                                <option id="aes-128-cfb" value="2"> aes-128-cfb</option>
+                                                <option id="aes-128-gcm" value="3"> aes-128-gcm</option>
+                                                <option id="chacha20-poly1305" value="4" selected> chacha20-poly1305
+                                                </option>
+                                                <option id="none" value="5"> none (不加密)</option>
+                                            </select>
+                                        {% elif v2ray.encrypt == "aes-128-cfb" %}
+                                            <select name="encrypt" class="mdui-select" mdui-select>
+                                                <option id="auto" value="1"> auto (自动选择)</option>
+                                                <option id="aes-128-cfb" value="2" selected> aes-128-cfb</option>
+                                                <option id="aes-128-gcm" value="3"> aes-128-gcm</option>
+                                                <option id="chacha20-poly1305" value="4"> chacha20-poly1305</option>
+                                                <option id="none" value="5"> none (不加密)</option>
+                                            </select>
+                                        {% elif v2ray.encrypt == "aes-128-gcm" %}
+                                            <select name="encrypt" class="mdui-select" mdui-select>
+                                                <option id="auto" value="1"> auto (自动选择)</option>
+                                                <option id="aes-128-cfb" value="2"> aes-128-cfb</option>
+                                                <option id="aes-128-gcm" value="3" selected> aes-128-gcm</option>
+                                                <option id="chacha20-poly1305" value="4"> chacha20-poly1305</option>
+                                                <option id="none" value="5"> none (不加密)</option>
+                                            </select>
+                                        {% elif v2ray.encrypt == "none" %}
+                                            <select name="encrypt" class="mdui-select" mdui-select>
+                                                <option id="auto" value="1"> auto (自动选择)</option>
+                                                <option id="aes-128-cfb" value="2"> aes-128-cfb</option>
+                                                <option id="aes-128-gcm" value="3"> aes-128-gcm</option>
+                                                <option id="chacha20-poly1305" value="4"> chacha20-poly1305</option>
+                                                <option id="none" value="5" selected> none (不加密)</option>
+                                            </select>
+                                        {% else %}
+                                            <select name="encrypt" class="mdui-select" mdui-select>
+                                                <option id="auto" value="1" selected> auto (自动选择)</option>
+                                                <option id="aes-128-cfb" value="2"> aes-128-cfb</option>
+                                                <option id="aes-128-gcm" value="3"> aes-128-gcm</option>
+                                                <option id="chacha20-poly1305" value="4"> chacha20-poly1305</option>
+                                                <option id="none" value="5"> none (不加密)</option>
+                                            </select>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>传输方式
+                            <i class="mdui-icon material-icons mdui-text-color-grey-400"
+                               mdui-dialog="{target: '#trans-helper'}">info</i>
+                            <div class="mdui-dialog" id="trans-helper">
+                                <div class="mdui-dialog-title">传输方式说明</div>
+                                <div class="mdui-dialog-content">
+                                    <b>TCP</b>：默认传输协议<br>
+                                    <b>WebSocket</b>：Websocket 传输协议<br>
+                                    <b>KCP</b>：kcp<br>
+                                    <b>Quic</b>：quic<br>
+                                    <b>H2</b>：h2协议<br>
+                                </div>
+                                <div class="mdui-dialog-actions">
+                                    <button class="mdui-btn mdui-ripple" mdui-dialog-close="">确认</button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <form id="trans_form" action="##">
+                                        {% if v2ray.trans == "h2" %}
+                                            <select name="trans" class="mdui-select" mdui-select>
+                                                <option id="tcp" value="1">tcp</option>
+                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="kcp" value="3">kcp</option>
+                                                <option id="quic" value="4">quic</option>
+                                                <option id="h2" value="5" selected>h2</option>
+                                            </select>
+                                        {% elif v2ray.trans == "websocket" %}
+                                            <select name="trans" class="mdui-select" mdui-select>
+                                                <option id="tcp" value="1">tcp</option>
+                                                <option id="websocket" value="2" selected>websocket</option>
+                                                <option id="kcp" value="3">kcp</option>
+                                                <option id="quic" value="4">quic</option>
+                                                <option id="h2" value="5">h2</option>
+                                            </select>
+                                        {% elif v2ray.trans == "kcp" %}
+                                            <select name="trans" class="mdui-select" mdui-select>
+                                                <option id="tcp" value="1">tcp</option>
+                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="kcp" value="3" selected>kcp</option>
+                                                <option id="quic" value="4">quic</option>
+                                                <option id="h2" value="5">h2</option>
+                                            </select>
+                                        {% elif v2ray.trans == "quic" %}
+                                            <select name="trans" class="mdui-select" mdui-select>
+                                                <option id="tcp" value="1">tcp</option>
+                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="kcp" value="3">kcp</option>
+                                                <option id="quic" value="4" selected>quic</option>
+                                                <option id="h2" value="5">h2</option>
+                                            </select>
+                                        {% else %}
+                                            <select name="trans" class="mdui-select" mdui-select>
+                                                <option id="tcp" value="1" selected>tcp</option>
+                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="kcp" value="3">kcp</option>
+                                                <option id="quic" value="4">quic</option>
+                                                <option id="h2" value="5">h2</option>
+                                            </select>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="vmess-config">
+                        <td>伪装类型</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <form id="fake_form" action="##">
+                                        {% if v2ray.fake == "none" %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1" selected> none</option>
+                                                <option id="http" value="2"> http</option>
+                                                <option id="srtp" value="3"> srtp</option>
+                                                <option id="utp" value="4"> utp</option>
+                                                <option id="wechat-video" value="5"> wechat-video</option>
+                                                <option id="dtls" value="6"> dtls</option>
+                                                <option id="wireguard" value="7"> wireguard</option>
+                                            </select>
+                                        {% elif v2ray.fake == "http" %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1"> none</option>
+                                                <option id="http" value="2" selected> http</option>
+                                                <option id="srtp" value="3"> srtp</option>
+                                                <option id="utp" value="4"> utp</option>
+                                                <option id="wechat-video" value="5"> wechat-video</option>
+                                                <option id="dtls" value="6"> dtls</option>
+                                                <option id="wireguard" value="7"> wireguard</option>
+                                            </select>
+                                        {% elif v2ray.fake == "srtp" %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1"> none</option>
+                                                <option id="http" value="2"> http</option>
+                                                <option id="srtp" value="3" selected> srtp</option>
+                                                <option id="utp" value="4"> utp</option>
+                                                <option id="wechat-video" value="5"> wechat-video</option>
+                                                <option id="dtls" value="6"> dtls</option>
+                                                <option id="wireguard" value="7"> wireguard</option>
+                                            </select>
+                                        {% elif v2ray.fake == "utp" %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1"> none</option>
+                                                <option id="http" value="2"> http</option>
+                                                <option id="srtp" value="3"> srtp</option>
+                                                <option id="utp" value="4" selected> utp</option>
+                                                <option id="wechat-video" value="5"> wechat-video</option>
+                                                <option id="dtls" value="6"> dtls</option>
+                                                <option id="wireguard" value="7"> wireguard</option>
+                                            </select>
+                                        {% elif v2ray.fake == "wechat-video" %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1"> none</option>
+                                                <option id="http" value="2"> http</option>
+                                                <option id="srtp" value="3"> srtp</option>
+                                                <option id="utp" value="4"> utp</option>
+                                                <option id="wechat-video" value="5" selected> wechat-video</option>
+                                                <option id="dtls" value="6"> dtls</option>
+                                                <option id="wireguard" value="7"> wireguard</option>
+                                            </select>
+                                        {% elif v2ray.fake == "dtls" %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1"> none</option>
+                                                <option id="http" value="2"> http</option>
+                                                <option id="srtp" value="3"> srtp</option>
+                                                <option id="utp" value="4"> utp</option>
+                                                <option id="wechat-video" value="5"> wechat-video</option>
+                                                <option id="dtls" value="6" selected> dtls</option>
+                                                <option id="wireguard" value="7"> wireguard</option>
+                                            </select>
+                                        {% else %}
+                                            <select name="fake" class="mdui-select" mdui-select>
+                                                <option id="none" value="1"> none</option>
+                                                <option id="http" value="2"> http</option>
+                                                <option id="srtp" value="3"> srtp</option>
+                                                <option id="utp" value="4"> utp</option>
+                                                <option id="wechat-video" value="5"> wechat-video</option>
+                                                <option id="dtls" value="6"> dtls</option>
+                                                <option id="wireguard" value="7" selected> wireguard</option>
+                                            </select>
+                                        {% endif %}
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>伪装域名
+                            <i class="mdui-icon material-icons mdui-text-color-grey-400"
+                               mdui-dialog="{target: '#fake-helper'}">info</i>
+                            <div class="mdui-dialog" id="fake-helper">
+                                <div class="mdui-dialog-title">伪装说明</div>
+                                <div class="mdui-dialog-content">
+                                    <b>host(host/ws host/h2 host)/QUIC</b>加密方式<br>
+                                </div>
+                                <div class="mdui-dialog-actions">
+                                    <button class="mdui-btn mdui-ripple" mdui-dialog-close="">确认</button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="host" class="mdui-textfield-input" type="text" placeholder="host"
+                                           value="{% if v2ray %}{{ v2ray.host }}{% endif %}"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>path
+                            <i class="mdui-icon material-icons mdui-text-color-grey-400"
+                               mdui-dialog="{target: '#path-helper'}">info</i>
+                            <div class="mdui-dialog" id="path-helper">
+                                <div class="mdui-dialog-title">伪装说明</div>
+                                <div class="mdui-dialog-content">
+                                    <b>ws path/h2 path/QUIC</b>加密秘钥<br>
+                                </div>
+                                <div class="mdui-dialog-actions">
+                                    <button class="mdui-btn mdui-ripple" mdui-dialog-close="">确认</button>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="path" class="mdui-textfield-input" type="text" placeholder="path"
+                                           value="{% if v2ray %}{{ v2ray.path }}{% endif %}"/>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TLS</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-6">
+                                    <label class="mdui-switch">
+                                        {% if v2ray.tls =="on" %}
+                                            <input type="checkbox" id="checkTLS" checked/>
+                                        {% else %}
+                                            <input type="checkbox" id="checkTLS"/>
+                                        {% endif %}
+                                        <i class="mdui-switch-icon"></i>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Mux.cool</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-6">
+                                    <label class="mdui-switch">
+                                        {% if v2ray.mux == "on" %}
+                                            <input type="checkbox" id="checkMUX" checked/>
+                                        {% else %}
+                                            <input type="checkbox" id="checkMUX"/>
+                                        {% endif %}
+                                        <i class="mdui-switch-icon"></i>
+                                    </label>
+                                </div>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <td>运行控制
+                        <i class="mdui-icon material-icons mdui-text-color-grey-400"
+                           mdui-dialog="{target: '#control-helper'}">info</i>
+                        <div class="mdui-dialog" id="control-helper">
+                            <div class="mdui-dialog-title">控制说明</div>
+                            <div class="mdui-dialog-content">
+                                <b>运行中无法修改配置,请点击运行中按钮，停止服务先</b><br>
+                            </div>
+                            <div class="mdui-dialog-actions">
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-close="">确认</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="mdui-row">
+                            <div class="mdui-col-md-4">
+                                <div class="mdui-chip" onclick="save_config()">
+                                    <span class="mdui-chip-icon mdui-color-yellow-700"><i
+                                            class="mdui-icon material-icons">settings_backup_restore</i></span>
+                                    <span class="mdui-chip-title">保存</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <p></p>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        mdui.mutation();
+
+        function message(m_message) {
+            mdui.snackbar(
+                {
+                    message: m_message,
+                    position: "right-top"
+                }
+            )
+        }
+
+        function save_config() {
+            let addr = document.getElementById('addr').value;
+            let port = document.getElementById('port').value;
+            let uuid = document.getElementById('uuid').value;
+            let alterId = document.getElementById('alterId').value;
+            let encrypt = document.getElementById('encrypt_form').innerText.split('(')[0].trim();
+
+            let trans = document.getElementById('trans_form').innerText;
+            let fake = document.getElementById('fake_form').innerText;
+            let host = document.getElementById('host').value;
+            let path = document.getElementById('path').value;
+            let remarks = document.getElementById('remarks').value;
+            let tls = document.getElementById('checkTLS');
+
+            if (tls.checked == true) {
+                tls = "on";
+            } else {
+                tls = "off";
+            }
+
+            let mux = document.getElementById('checkMUX');
+            if (mux.checked == true) {
+                mux = "on";
+            } else {
+                mux = "off";
+            }
+            let status = "off";
+
+            if (remarks == "") {
+                mdui.alert('备注不能为空');
+                return;
+            }
+            if (addr == "") {
+                mdui.alert('地址不正确');
+                return;
+            }
+            if (port == "") {
+                mdui.alert('端口号不能为空');
+                return;
+            }
+            if (!isAllNaN(port)) {
+                mdui.alert('端口号只能为数字');
+                return;
+            }
+            if (!isAllNaN(alterId)) {
+                mdui.alert('id只能为数字');
+                return;
+            }
+
+            $.ajax({
+                url: '/api/generate_config',
+                headers: {"Content-Type": "application/json;charset=utf-8"},
+                {% if v2ray %}
+                    data: JSON.stringify({
+                        "num": {{ v2ray.num }},
+                        "addr": addr,
+                        "port": port,
+                        "uuid": uuid,
+                        "alterId": alterId,
+                        "encrypt": encrypt,
+                        "trans": trans,
+                        "fake": fake,
+                        "host": host,
+                        "path": path,
+                        "tls": tls,
+                        "mux": mux,
+                        "status": status,
+                        "remarks": remarks
+                    }),
+                {% else %}
+                    data: JSON.stringify({
+                        "addr": addr,
+                        "port": port,
+                        "uuid": uuid,
+                        "alterId": alterId,
+                        "encrypt": encrypt,
+                        "trans": trans,
+                        "fake": fake,
+                        "host": host,
+                        "path": path,
+                        "tls": tls,
+                        "mux": mux,
+                        "status": status,
+                        "remarks": remarks
+                    }),
+                {% endif %}
+                type: 'post',
+                dataType: 'json',
+                success: function (data) { //后端返回的json数据（此处data为json对象）
+
+                    if (data == "illegal") {
+                        message("你填写的数据有误")
+                    } else {
+                        message("保存配置成功")
+                        window.location.href = data['addr'];
+                    }
+                },
+                error: function () {
+                    alert('异常')
+                }
+            });
+
+
+        }
+
+
+        function isAllNaN(str) {
+            for (var i = 0; i < str.length; i++) {
+                if (isNaN(str.charAt(i))) {
+                    return false;
+                }
+                if (str.charAt(i) === ' ') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        function change_uuid() {
+            let new_uuid = uuid();
+            $('#uuid').attr("value", new_uuid);
+        }
+
+
+        function control_service() {
+            var action = document.getElementById('control');
+            var color = document.getElementById('control_color')
+            if (action.innerText == "运行中") {
+                stop_service();
+                action.innerText = "未运行";
+                color.setAttribute("class", "mdui-chip-icon mdui-color-red");
+            } else {
+                start_service();
+                action.innerText = "运行中";
+                color.setAttribute("class", "mdui-chip-icon mdui-color-green");
+            }
+        }
+
+        function uuid() {
+            var s = [];
+            var hexDigits = "0123456789abcdef";
+            for (var i = 0; i < 36; i++) {
+                s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+            }
+            s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+            s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+            s[8] = s[13] = s[18] = s[23] = "-";
+
+            var uuid = s.join("");
+            return uuid;
+        }
+
+        function randHex() {
+            // openssl rand -hex 16
+            var s = [];
+            var hexDigits = "0123456789abcdef";
+            for (var i = 0; i < 32; i++) {
+                s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+            }
+            var randHex = s.join("");
+            return randHex;
+        }
+
+
+    </script>
+{% endblock %}

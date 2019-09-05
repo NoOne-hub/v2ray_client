@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="mdui-container">
+        <p></p>
+        <div class="mdui-row">
+            <div class="mdui-table-fluid">
+                <table class="mdui-table">
+                    <thead>
+                    <tr>
+                        <th colspan="2">
+                            <div class="mdui-row">
+                                运行日志 (实时刷新）
+                            </div>
+                            <div class="mdui-row" style="width: 100%">
+                                <div class="mdui-progress">
+                                    <div class="mdui-progress-indeterminate"></div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="width: 50%">
+                            <div class="mdui-row" style="width: 100%">
+                                access.log
+                                <pre><code id="log-access-content" class="language-css"></code></pre>
+                            </div>
+                        </td>
+                    </tr>
+                    <td style="width: 50%">
+                        <div class="mdui-row" style="width: 100%">
+                            error.log
+                            <pre><code id="log-error-content" class="language-css"></code></pre>
+                        </div>
+                    </td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <p></p>
+
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+
+        function timer() {
+            $('#log-access-content').load('/get_access_log');
+            $('#log-error-content').load('/get_error_log');
+            var t = setTimeout("timer()", 1500);
+        }
+
+        timer()
+    </script>
+{% endblock %}

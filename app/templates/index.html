@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <div class="mdui-container">
+        <p></p>
+        <div class="mdui-row">
+            <div class="mdui-table-fluid">
+                <div class="mdui-toolbar mdui-color-theme">
+                    <div class="mdui-dialog" id="inputvmess-dialog">
+                        <div class="mdui-dialog-title">添加Vmess链接</div>
+                        <div class="mdui-dialog-content">
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-2"></div>
+                                <p><strong>* </strong> 先黏贴你剪贴板vmess链接</p>
+                            </div>
+                            <p></p>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-2"></div>
+                                <div class="mdui-col-md-6">
+                                    <input id="vmess_input_domain" class="mdui-textfield-input"
+                                           placeholder="请输入vmess链接" value=""/>
+                                </div>
+                            </div>
+                            <p></p>
+
+                        </div>
+                        <div class="mdui-dialog-actions">
+                            <button class="mdui-btn mdui-ripple" mdui-dialog-close="" onclick="vmess_confirm()">确认
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mdui-dialog" id="deleteconfirm-dialog">
+                        <div class="mdui-dialog-title">确认删除?</div>
+                        <div class="mdui-dialog-content">你将会失去所选中的内容!
+                        </div>
+                        <div class="mdui-dialog-actions">
+                            <button class="mdui-btn" mdui-dialog-close="" onclick="">取消</button>
+                            <button class="mdui-btn" mdui-dialog-close="" onclick="confirm_remove()">确认</button>
+                        </div>
+                    </div>
+
+                    <ul class="mdui-menu mdui-menu-cascade" id="add-attr">
+                        <li class="mdui-menu-item">
+                            <a href="javascript:;" class="mdui-ripple">
+                                <i class="mdui-menu-item-icon mdui-icon material-icons">zoom_out_map</i> 扫描二维码
+                            </a>
+                        </li>
+                        <li class="mdui-menu-item">
+                            <a href="javascript:;" class="mdui-ripple" onclick="input_vmess()">
+                                <i class="mdui-menu-item-icon mdui-icon material-icons">content_cut</i>从剪贴板导入
+                            </a>
+                        </li>
+                        <li class="mdui-menu-item">
+                            <a href="{{ url_for('config') }}" class="mdui-ripple">
+                                <i class="mdui-menu-item-icon mdui-icon material-icons">mode_edit</i>手动输入[Vmess]
+                            </a>
+                        </li>
+                    </ul>
+
+                    <a href="javascript:;" class="mdui-btn mdui-btn-icon"><i
+                            class="mdui-icon material-icons">menu</i></a>
+                    <span class="mdui-typo-title">配置管理面板</span>
+                    <div class="mdui-toolbar-spacer"></div>
+                    <button class="mdui-fab mdui-fab-mini mdui-ripple" onclick="start()"><i
+                            class="mdui-icon material-icons">play_arrow</i></button>
+                    <button class="mdui-btn mdui-fab mdui-fab-mini mdui-ripple" onclick="stop()"><i
+                            class="mdui-icon material-icons">stop</i></button>
+                    <button class="mdui-btn mdui-fab mdui-fab-mini mdui-ripple"
+                            mdui-menu="{target: '#add-attr'}"><i class="mdui-icon material-icons">add</i></button>
+                    <button class="mdui-fab mdui-fab-mini mdui-ripple" onclick="remove()"><i
+                            class="mdui-icon material-icons">remove</i>
+                    </button>
+                    <button class="mdui-fab mdui-fab-mini mdui-ripple" onclick="edit()"><i
+                            class="mdui-icon material-icons">edit</i>
+                    </button>
+                </div>
+                <table class="mdui-table mdui-table-selectable">
+                    <thead>
+                    <tr>
+                        <th>备注信息</th>
+                        <th>地址</th>
+                        <th>配置状态</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbMain">
+                    {% for i in v2rayconfigs %}
+                        <tr id="row-{{ i.num }}">
+                            <td id="row--2">{{ i.remarks }}</td>
+                            <td id="row--3">{{ i.addr }}</td>
+                            <td id="row--4">{{ i.status }}</td>
+                            <td id="row--1" hidden="True">{{ i.num }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <p></p>
+
+
+{% endblock %}
+{% block script %}
+    <script type="text/javascript">
+
+        var $$ = mdui.JQ;
+        mdui.mutation();
+    </script>
+    <script>
+        function input_vmess() {
+            let inst = new mdui.Dialog('#inputvmess-dialog');
+            inst.open()
+        }
+
+        function message(m_message) {
+            mdui.snackbar(
+                {
+                    message: m_message,
+                    position: "right-top"
+                }
+            )
+        }
+
+        function edit() {
+            var matches = document.querySelectorAll("tr.mdui-table-row-selected");//返回一个NodeList
+            if (matches.length <= 0) {
+                message("未选中一个");
+                return;
+            } else if (matches.length > 1) {
+                message("无法同时编辑多个配置");
+                return;
+            }
+            matches.forEach(function (userItem) {
+                editRowById(userItem.cells[4].innerHTML);
+            });
+        }
+
+        function start() {
+
+            var matches = document.querySelectorAll("tr.mdui-table-row-selected");//返回一个NodeList
+            if (matches.length <= 0) {
+                message("未选中一个");
+                return;
+            } else if (matches.length > 1) {
+                message("无法同时启用多个配置");
+                return;
+            }
+            matches.forEach(function (userItem) {
+                start_service(userItem.cells[4].innerHTML);
+            });
+        }
+
+        function start_service(newsId) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/start_service',
+                data: {
+                    id: newsId,
+                },
+                success: function (data) {
+                    if (data == 'Failure') {
+                        message("启动配置失败，已经有使用的配置了！！");
+                    } else {
+                        message("成功");
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+        function stop() {
+
+            var matches = document.querySelectorAll("tr.mdui-table-row-selected");//返回一个NodeList
+            if (matches.length <= 0) {
+                message("未选中一个");
+                return;
+            }
+            matches.forEach(function (userItem) {
+                stop_service(userItem.cells[4].innerHTML);
+            });
+        }
+
+        function stop_service(newsId) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/stop_service',
+                data: {
+                    id: newsId,
+                },
+                success: function (data) {
+                    if (data == 'Failure') {
+                        message("停止失败，该配置已经是停止状态");
+                    } else {
+                        message("成功停止");
+                        location.reload();
+                    }
+                }
+            });
+        }
+
+
+        function remove() {
+            len = $$('.mdui-table-row-selected').length;
+            if (len <= 0) {
+                message("您未选择一个")
+            } else {
+                var inst = new mdui.Dialog('#deleteconfirm-dialog');
+                inst.open()
+            }
+
+        }
+
+        function confirm_remove() {
+            var matches = document.querySelectorAll("tr.mdui-table-row-selected");//返回一个NodeList
+            matches.forEach(function (userItem) {
+                deleteRowById(userItem.cells[4].innerHTML);
+            });
+        }
+
+        function deleteRowById(newsId) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/deleteById',
+                data: {
+                    id: newsId,
+                },
+                success: function (data) {
+                    if (data == 'True') {
+                        message("删除成功！！");
+                        location.reload()
+
+                    } else {
+                        message("删除失败");
+                    }
+                }
+            });
+        }
+
+        function vmess_confirm() {
+            let vmess = document.getElementById('vmess_input_domain').value;
+            if (vmess == "") {
+                message("请确认链接正确");
+                return;
+            }
+            $.ajax({
+                method: 'POST',
+                url: '/api/vmess2config',
+                data: {
+                    vmess: vmess
+                },
+                success: function (data) {
+                    if (data == "OK") {
+                        message("成功");
+                        location.reload();
+                    } else {
+                        message("Vmess链接错误");
+                    }
+
+                },
+                error: function () {
+                    message("错误")
+                }
+            })
+        }
+
+        function editRowById(newsId) {
+            $.ajax({
+                method: 'POST',
+                url: '/api/editById',
+                data: {
+                    id: newsId,
+                },
+                success: function (data) {
+                    window.location.href = data;
+                }
+            });
+        }
+    </script>
+{% endblock %}
