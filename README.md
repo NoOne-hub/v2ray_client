@@ -19,13 +19,14 @@
 - **注意：root权限下运行，不然无法修改v2ray配置**
 - **注意：root权限下运行，不然无法修改v2ray配置**
 
-要求：python3环境，linux
+要求：python3环境，linux,不支持红帽系列linux，因为命令不相同，没写安装脚本，可以自行配置
 
 1. 创建虚拟环境（自选) virtualenv -p python3 venv
 2. source venv/bin/active
 3. cd 到项目目录
 4. 运行 sudo ./install.sh
 5. 按照脚本操作后，将会部署到后台
+6. 部署完成后访问http://127.0.0.1:8000
 
 
 ## 启动停止方法
