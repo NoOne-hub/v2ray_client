@@ -5,7 +5,7 @@ import subprocess
 from urllib.parse import unquote
 from app.models import v2rayConfig, AlchemyEncoder
 from app import db
-from app.v2rayControl.config_generate import gen_client
+from app.v2rayControl.vmess2json import gen_client
 from app.models import Parse, subscription
 import re
 import urllib
@@ -60,25 +60,43 @@ def restart():
 
 
 def json2config(data, sub_url=""):
-    ws = 'websocket' if data['net'] == 'ws' else data['net']
-    tls = 'on' if data['tls'] == 'tls' else 'off'
     v2 = v2rayConfig(
-        addr=data['add'],
-        alterId=data['aid'],
+        add=data['add'],
+        aid=data['aid'],
         host=data['host'],
-        uuid=data['id'],
-        trans=ws,
+        id=data['id'],
+        net=data['net'],
         path=data['path'],
         port=data['port'],
-        remarks=data['ps'],
-        tls=tls,
-        fake=data['type'],
+        ps=data['ps'],
+        tls=data['tls'],
+        type=data['type'],
         encrypt='auto',  # 默认为auto
         mux='off',  # 默认关闭
         status="off",  # 默认关闭
         sub=sub_url
     )
     return v2
+
+
+'''
+消息处理部分
+'''
+
+
+def set_message(code=200, url=""):
+    if code == 200:
+        return {
+            "code": code,
+            "status": "Success",
+            "url": url
+        }
+    else:
+        return {
+            "code": code,
+            "status": "Failure",
+            "url": url
+        }
 
 
 '''
@@ -146,25 +164,25 @@ def addSubscription():
     data = json.loads(request.get_data(as_text=True))
     print(data)
     if not re.findall(re_word, data['addr']):  # 检测订阅地址是否合法
-        return {
-            "status": "Failure"
-        }
+        return set_message(400)
     sub = subscription(
         addr=data['addr'],
         remarks=data['remarks']
     )
+    # 查找是否已存在这个订阅地址
+    find = subscription.query.filter(subscription.addr == data['addr']).first()
+    if find is not None:
+        return set_message(400)
+    print("1")
     db.session.add(sub)
     db.session.commit()
-    return {
-        "status": "Success"
-    }
+    return set_message(200)
 
 
 @app.route('/api/deleteSub', methods=["GET", "POST"])
 def deleteSub():
     data = request.get_data(as_text=True)
     num = data.split('=')[1]
-    print(num)
     deleteConfig = subscription.query.filter(subscription.num == num).first()
     configs = v2rayConfig.query.filter(v2rayConfig.sub == deleteConfig.addr)
     for i in configs:
@@ -172,7 +190,7 @@ def deleteSub():
     db.session.delete(deleteConfig)
     db.session.commit()
 
-    return "True"
+    return set_message(200)
 
 
 @app.route('/api/editSubscription', methods=["GET", "POST"])
@@ -181,15 +199,11 @@ def editSubscription():
     print(data)
     modifyConfig = subscription.query.filter(subscription.num == data['num']).first()
     if modifyConfig is None:
-        return {
-            "status": "Failure"
-        }
+        return set_message(400)
     modifyConfig.addr = data['addr']
     modifyConfig.remarks = data['remarks']
     db.session.commit()
-    return {
-        "status": "Success"
-    }
+    return set_message(200)
 
 
 @app.route('/api/updateSub', methods=["GET", "POST"])
@@ -198,6 +212,7 @@ def updateSub():
     num = data.split('=')[1]
     updateConfig = subscription.query.filter(subscription.num == num).first()
     sub_url = updateConfig.addr
+    print(sub_url)
     try:
         print("Reading from subscribe ...")
         headers = {
@@ -207,26 +222,22 @@ def updateSub():
             _subs = response.read()
             result = Parse.parse_subscription(_subs)
     except Exception as e:
-        return {
-            "status": "Failure"
-        }
+        return set_message(400)
     if result is None:
-        return {
-            "status": "Failure"
-        }
+        return set_message(400)
     print(result)
+    need_stop = v2rayConfig.query.filter(v2rayConfig.status == "on").first()
+    # 先停止服务
+    if need_stop is not None:
+        stop()
     old_sub = v2rayConfig.query.filter(v2rayConfig.sub == sub_url)
     for i in old_sub:
         db.session.delete(i)
-    print("1")
     for i in result:
         v2 = json2config(i, sub_url)
         db.session.add(v2)
     db.session.commit()
-    return {
-        "status": "Success",
-        "url": url_for('index')
-    }
+    return set_message(200, url_for('index'))
 
 
 @app.route('/api/generate_config', methods=['GET', 'POST'])
@@ -237,41 +248,39 @@ def generate_config():
     saveConfig = v2rayConfig.query.filter(v2rayConfig.num == data['num']).first()
     print(saveConfig.num)
     if saveConfig is not None:
-        saveConfig.uuid = data['uuid']
-        saveConfig.addr = data['addr']
+        saveConfig.id = data['uuid']
+        saveConfig.add = data['addr']
         saveConfig.port = data['port']
-        saveConfig.alterId = data['alterId']
+        saveConfig.aid = data['alterId']
         saveConfig.encrypt = data['encrypt']
-        saveConfig.fake = data['fake']
+        saveConfig.type = data['fake']
         saveConfig.path = data['path']
         saveConfig.tls = data['tls']
         saveConfig.mux = data['mux']
-        saveConfig.status = data['status']
-        saveConfig.remarks = data['remarks']
-        saveConfig.trans = data['trans']
+        saveConfig.ps = data['remarks']
+        saveConfig.net = data['trans']
         saveConfig.host = data['host']
+        saveConfig.status = data['status']
     else:
         # 手动添加部分
         v2 = v2rayConfig(
-            uuid=data['uuid'],
-            addr=data['addr'],
+            id=data['uuid'],
+            add=data['addr'],
             port=data['port'],
-            alterId=data['alterId'],
+            aid=data['alterId'],
             encrypt=data['encrypt'],
-            fake=data['fake'],
+            type=data['fake'],
             path=data['path'],
             tls=data['tls'],
             mux=data['mux'],
             status=data['status'],
-            remarks=data['remarks'],
-            trans=data['trans'],
+            ps=data['remarks'],
+            net=data['trans'],
             host=data['host']
         )
         db.session.add(v2)
     db.session.commit()
-    return {
-        "addr": url_for('index')
-    }
+    return set_message(200, url_for('index'))
 
 
 @app.route('/api/deleteById', methods=["GET", "POST"])
@@ -281,14 +290,14 @@ def deleteById():
     deleteConfig = v2rayConfig.query.filter(v2rayConfig.num == num).first()
     db.session.delete(deleteConfig)
     db.session.commit()
-    return "True"
+    return set_message(200)
 
 
 @app.route('/api/editById', methods=["GET", "POST"])
 def editById():
     data = request.get_data(as_text=True)
     num = data.split('=')[1]
-    return url_for('config', num=num)
+    return set_message(200, url_for('config', num=num))
 
 
 @app.route('/api/start_service', methods=['POST', "GET"])
@@ -300,11 +309,12 @@ def start_service():
         i.status = "off"
     startConfig = v2rayConfig.query.filter(v2rayConfig.num == num).first()
     myjson = json.dumps(startConfig, cls=AlchemyEncoder)
+    print(myjson)
     gen_client(json.loads(myjson))
     startConfig.status = "on"
     db.session.commit()
     restart()
-    return "OK"
+    return set_message(200)
 
 
 @app.route('/api/stop_service', methods=['POST', "GET"])
@@ -314,11 +324,11 @@ def stop_service():
     num = data.split('=')[1]
     stopConfig = v2rayConfig.query.filter(v2rayConfig.num == num).first()
     if stopConfig.status == "off":
-        return "Failure"
+        return set_message(400)
     stopConfig.status = "off"
     db.session.commit()
     stop()
-    return "OK"
+    return set_message(200)
 
 
 @app.route('/api/vmess2config', methods=["POST", "GET"])
@@ -329,8 +339,8 @@ def vmess2config():
         data = unquote(data)
         data = Parse.parseVmess(data)
     except Exception as e:
-        return "Failure"
+        return set_message(400)
     v2 = json2config(data)
     db.session.add(v2)
     db.session.commit()
-    return "OK"
+    return set_message(200)

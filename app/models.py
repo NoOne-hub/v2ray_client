@@ -5,7 +5,6 @@ import urllib
 import json
 
 
-
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
@@ -107,31 +106,23 @@ class Parse:
 
 class v2rayConfig(db.Model):
     num = db.Column(db.Integer, primary_key=True)
-    addr = db.Column(db.String(100), index=True)
-    port = db.Column(db.Integer)
-    uuid = db.Column(db.String(100), index=True)
-    alterId = db.Column(db.Integer)
-    encrypt = db.Column(db.String(100))
-    trans = db.Column(db.String(100))
-    fake = db.Column(db.String(100))
+    add = db.Column(db.String(100))
     host = db.Column(db.String(100))
+    id = db.Column(db.String(100))
+    aid = db.Column(db.Integer)
+    type = db.Column(db.String(100))
+    net = db.Column(db.String(100))
     path = db.Column(db.String(100))
+    ps = db.Column(db.String(100))
     tls = db.Column(db.String(20))
+    port = db.Column(db.Integer)
+    encrypt = db.Column(db.String(100))
     mux = db.Column(db.String(20))
-    status = db.Column(db.String(20), index=True)
-    remarks = db.Column(db.String(100), index=True)
+    status = db.Column(db.String(20))
     sub = db.Column(db.String(200))
-
-
-    def __repr__(self):
-        return '<V2rayConfig {}>'.format(self.addr)
-
-
-
 
 
 class subscription(db.Model):
     num = db.Column(db.Integer, primary_key=True)
     addr = db.Column(db.String(100))
     remarks = db.Column(db.String(100))
-

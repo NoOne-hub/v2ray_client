@@ -155,8 +155,8 @@
             let inst = new mdui.Dialog('#editvmess-dialog')
             inst.open()
             matches.forEach(function (userItem) {
-                document.getElementById('edit_remarks').value = userItem.cells[2].innerHTML;
-                document.getElementById('edit_addr').value = userItem.cells[3].innerHTML;
+                document.getElementById('edit_remarks').value = userItem.cells[1].innerHTML;
+                document.getElementById('edit_addr').value = userItem.cells[2].innerHTML;
             });
         }
 
@@ -251,7 +251,7 @@
                     id: newsId,
                 },
                 success: function (data) {
-                    if (data == 'True') {
+                    if (data['status'] == 'Success') {
                         message("删除成功！！");
                         location.reload()
 

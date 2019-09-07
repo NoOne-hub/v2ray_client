@@ -86,8 +86,8 @@
                     <tbody id="tbMain">
                     {% for i in v2rayconfigs %}
                         <tr id="row-{{ i.num }}">
-                            <td id="row--2">{{ i.remarks }}</td>
-                            <td id="row--3">{{ i.addr }}</td>
+                            <td id="row--2">{{ i.ps }}</td>
+                            <td id="row--3">{{ i.add }}</td>
                             <td id="row--4">{{ i.status }}</td>
                             <td id="row--1" hidden="True">{{ i.num }}</td>
                         </tr>
@@ -160,7 +160,7 @@
                     id: newsId,
                 },
                 success: function (data) {
-                    if (data == 'Failure') {
+                    if (data['status'] == "Failure") {
                         message("启动配置失败，已经有使用的配置了！！");
                     } else {
                         message("成功");
@@ -189,8 +189,9 @@
                 data: {
                     id: newsId,
                 },
+                datatype: 'json',
                 success: function (data) {
-                    if (data == 'Failure') {
+                    if (data['status'] == 'Failure') {
                         message("停止失败，该配置已经是停止状态");
                     } else {
                         message("成功停止");
@@ -227,7 +228,7 @@
                     id: newsId,
                 },
                 success: function (data) {
-                    if (data == 'True') {
+                    if (data['status'] == 'Success') {
                         message("删除成功！！");
                         location.reload()
 
@@ -251,7 +252,7 @@
                     vmess: vmess
                 },
                 success: function (data) {
-                    if (data == "OK") {
+                    if (data['status'] == "Success") {
                         message("成功");
                         location.reload();
                     } else {
@@ -273,7 +274,7 @@
                     id: newsId,
                 },
                 success: function (data) {
-                    window.location.href = data;
+                    window.location.href = data['url'];
                 }
             });
         }

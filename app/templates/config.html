@@ -21,7 +21,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-4" style="margin: 3px">
                                     <input id="remarks" class="mdui-textfield-input" type="text" placeholder="备注"
-                                           value="{% if v2ray %}{{ v2ray.remarks }}{% endif %}"/>
+                                           value="{% if v2ray %}{{ v2ray.ps }}{% endif %}"/>
                                 </div>
                             </div>
                         </td>
@@ -32,7 +32,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-4" style="margin: 3px">
                                     <input id="addr" class="mdui-textfield-input" type="text" placeholder="服务器ip"
-                                           value="{% if v2ray %}{{ v2ray.addr }}{% endif %}"/>
+                                           value="{% if v2ray %}{{ v2ray.add }}{% endif %}"/>
                                 </div>
                             </div>
                         </td>
@@ -54,7 +54,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-6">
                                     <input id="uuid" class="mdui-textfield-input" type="text" readonly="readonly"
-                                           value="{% if v2ray %}{{ v2ray.uuid }}{% else %}{% endif %}"/>
+                                           value="{% if v2ray %}{{ v2ray.id }}{% else %}{% endif %}"/>
                                 </div>
                                 <div class="mdui-col-md-1" id="uuid_change" onclick="change_uuid()">
                                     <button class="mdui-btn mdui-color-theme-accent mdui-ripple">
@@ -70,7 +70,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-4" style="margin: 3px">
                                     <input id="alterId" class="mdui-textfield-input" type="text" placeholder="id"
-                                           value="{% if v2ray %}{{ v2ray.alterId }}{% endif %}"/>
+                                           value="{% if v2ray %}{{ v2ray.aid }}{% endif %}"/>
                                 </div>
                             </div>
                         </td>
@@ -138,7 +138,7 @@
                                 <div class="mdui-dialog-title">传输方式说明</div>
                                 <div class="mdui-dialog-content">
                                     <b>TCP</b>：默认传输协议<br>
-                                    <b>WebSocket</b>：Websocket 传输协议<br>
+                                    <b>ws</b>：ws 传输协议<br>
                                     <b>KCP</b>：kcp<br>
                                     <b>Quic</b>：quic<br>
                                     <b>H2</b>：h2协议<br>
@@ -152,34 +152,34 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-4" style="margin: 3px">
                                     <form id="trans_form" action="##">
-                                        {% if v2ray.trans == "h2" %}
+                                        {% if v2ray.net == "h2" %}
                                             <select name="trans" class="mdui-select" mdui-select>
                                                 <option id="tcp" value="1">tcp</option>
-                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="ws" value="2">ws</option>
                                                 <option id="kcp" value="3">kcp</option>
                                                 <option id="quic" value="4">quic</option>
                                                 <option id="h2" value="5" selected>h2</option>
                                             </select>
-                                        {% elif v2ray.trans == "websocket" %}
+                                        {% elif v2ray.net == "ws" %}
                                             <select name="trans" class="mdui-select" mdui-select>
                                                 <option id="tcp" value="1">tcp</option>
-                                                <option id="websocket" value="2" selected>websocket</option>
+                                                <option id="ws" value="2" selected>ws</option>
                                                 <option id="kcp" value="3">kcp</option>
                                                 <option id="quic" value="4">quic</option>
                                                 <option id="h2" value="5">h2</option>
                                             </select>
-                                        {% elif v2ray.trans == "kcp" %}
+                                        {% elif v2ray.net == "kcp" %}
                                             <select name="trans" class="mdui-select" mdui-select>
                                                 <option id="tcp" value="1">tcp</option>
-                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="ws" value="2">ws</option>
                                                 <option id="kcp" value="3" selected>kcp</option>
                                                 <option id="quic" value="4">quic</option>
                                                 <option id="h2" value="5">h2</option>
                                             </select>
-                                        {% elif v2ray.trans == "quic" %}
+                                        {% elif v2ray.net == "quic" %}
                                             <select name="trans" class="mdui-select" mdui-select>
                                                 <option id="tcp" value="1">tcp</option>
-                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="ws" value="2">ws</option>
                                                 <option id="kcp" value="3">kcp</option>
                                                 <option id="quic" value="4" selected>quic</option>
                                                 <option id="h2" value="5">h2</option>
@@ -187,7 +187,7 @@
                                         {% else %}
                                             <select name="trans" class="mdui-select" mdui-select>
                                                 <option id="tcp" value="1" selected>tcp</option>
-                                                <option id="websocket" value="2">websocket</option>
+                                                <option id="ws" value="2">ws</option>
                                                 <option id="kcp" value="3">kcp</option>
                                                 <option id="quic" value="4">quic</option>
                                                 <option id="h2" value="5">h2</option>
@@ -204,7 +204,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-4" style="margin: 3px">
                                     <form id="fake_form" action="##">
-                                        {% if v2ray.fake == "none" %}
+                                        {% if v2ray.type == "none" %}
                                             <select name="fake" class="mdui-select" mdui-select>
                                                 <option id="none" value="1" selected> none</option>
                                                 <option id="http" value="2"> http</option>
@@ -214,7 +214,7 @@
                                                 <option id="dtls" value="6"> dtls</option>
                                                 <option id="wireguard" value="7"> wireguard</option>
                                             </select>
-                                        {% elif v2ray.fake == "http" %}
+                                        {% elif v2ray.type == "http" %}
                                             <select name="fake" class="mdui-select" mdui-select>
                                                 <option id="none" value="1"> none</option>
                                                 <option id="http" value="2" selected> http</option>
@@ -224,7 +224,7 @@
                                                 <option id="dtls" value="6"> dtls</option>
                                                 <option id="wireguard" value="7"> wireguard</option>
                                             </select>
-                                        {% elif v2ray.fake == "srtp" %}
+                                        {% elif v2ray.type == "srtp" %}
                                             <select name="fake" class="mdui-select" mdui-select>
                                                 <option id="none" value="1"> none</option>
                                                 <option id="http" value="2"> http</option>
@@ -234,7 +234,7 @@
                                                 <option id="dtls" value="6"> dtls</option>
                                                 <option id="wireguard" value="7"> wireguard</option>
                                             </select>
-                                        {% elif v2ray.fake == "utp" %}
+                                        {% elif v2ray.type == "utp" %}
                                             <select name="fake" class="mdui-select" mdui-select>
                                                 <option id="none" value="1"> none</option>
                                                 <option id="http" value="2"> http</option>
@@ -244,7 +244,7 @@
                                                 <option id="dtls" value="6"> dtls</option>
                                                 <option id="wireguard" value="7"> wireguard</option>
                                             </select>
-                                        {% elif v2ray.fake == "wechat-video" %}
+                                        {% elif v2ray.type == "wechat-video" %}
                                             <select name="fake" class="mdui-select" mdui-select>
                                                 <option id="none" value="1"> none</option>
                                                 <option id="http" value="2"> http</option>
@@ -254,7 +254,7 @@
                                                 <option id="dtls" value="6"> dtls</option>
                                                 <option id="wireguard" value="7"> wireguard</option>
                                             </select>
-                                        {% elif v2ray.fake == "dtls" %}
+                                        {% elif v2ray.type == "dtls" %}
                                             <select name="fake" class="mdui-select" mdui-select>
                                                 <option id="none" value="1"> none</option>
                                                 <option id="http" value="2"> http</option>
@@ -332,7 +332,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-6">
                                     <label class="mdui-switch">
-                                        {% if v2ray.tls =="on" %}
+                                        {% if v2ray.tls =="tls" %}
                                             <input type="checkbox" id="checkTLS" checked/>
                                         {% else %}
                                             <input type="checkbox" id="checkTLS"/>
@@ -351,7 +351,7 @@
                             <div class="mdui-row">
                                 <div class="mdui-col-md-6">
                                     <label class="mdui-switch">
-                                        {% if v2ray.mux == "on" %}
+                                        {% if v2ray.mux == "mux" %}
                                             <input type="checkbox" id="checkMUX" checked/>
                                         {% else %}
                                             <input type="checkbox" id="checkMUX"/>
@@ -498,11 +498,11 @@
                 dataType: 'json',
                 success: function (data) { //后端返回的json数据（此处data为json对象）
 
-                    if (data == "illegal") {
+                    if (data['status'] == "Failure") {
                         message("你填写的数据有误")
                     } else {
                         message("保存配置成功")
-                        window.location.href = data['addr'];
+                        window.location.href = data['url'];
                     }
                 },
                 error: function () {
