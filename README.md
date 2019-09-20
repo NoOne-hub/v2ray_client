@@ -22,7 +22,7 @@
 要求：python3环境，linux
 
 1. 创建虚拟环境（自选) virtualenv -p python3 venv
-2. source venv/bin/active
+2. source venv/bin/activate
 3. cd 到项目目录
 4. 运行 sudo ./install.sh
 5. 按照脚本操作后，将会部署到后台
