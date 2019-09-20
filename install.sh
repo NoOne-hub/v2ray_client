@@ -72,42 +72,7 @@ function install_v2ray() {
     fi
 }
 
-# 安装mac平台必要软件
-function install_prepare_software_on_mac()
-{
-    brew install supervisor virtualenv
-}
-
-# 安装ubuntu必要软件
-function install_prepare_software_on_ubuntu()
-{
-    sudo apt-get update
-    sudo apt-get install -y supervisor virtualenv
-}
-
-# 安装debian必要软件
-function install_prepare_software_on_debian()
-{
-    sudo apt-get update
-    sudo apt-get install -y supervisor virtualenv
-}
-
-# 安装centos必要软件
-function install_prepare_software_on_centos()
-{
-    sudo yum install -y supervisor virtualenv
-}
-
-# 安装fedora必要软件
-function install_prepare_software_on_fedora()
-{
-    sudo dnf install -y supervisor virtualenv
-}
-
-# 安装archlinux必要软件
-function install_prepare_software_on_archlinux()
-{
-    sudo pacman -S --noconfirm supervisor virtualenv
+function config_supervisor() {
     sudo mkdir -m 700 -p /etc/supervisor
     sudo touch /etc/supervisor/supervisord.conf
     sudo mkdir -m 700 /etc/supervisor/conf.d
@@ -139,6 +104,47 @@ serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
 
 [include]
 files = /etc/supervisor/conf.d/*.conf" > /etc/supervisor/supervisord.conf
+
+}
+
+# 安装mac平台必要软件
+function install_prepare_software_on_mac()
+{
+    brew install supervisor virtualenv
+}
+
+# 安装ubuntu必要软件
+function install_prepare_software_on_ubuntu()
+{
+    sudo apt-get update
+    sudo apt-get install -y supervisor virtualenv
+}
+
+# 安装debian必要软件
+function install_prepare_software_on_debian()
+{
+    sudo apt-get update
+    sudo apt-get install -y supervisor virtualenv
+}
+
+# 安装centos必要软件
+function install_prepare_software_on_centos()
+{
+    sudo yum install -y supervisor virtualenv
+    config_supervisor
+}
+
+# 安装fedora必要软件
+function install_prepare_software_on_fedora()
+{
+    sudo dnf install -y supervisor virtualenv
+}
+
+# 安装archlinux必要软件
+function install_prepare_software_on_archlinux()
+{
+    sudo pacman -S --noconfirm supervisor virtualenv
+    config_supervisor
 }
 
 
@@ -146,6 +152,7 @@ files = /etc/supervisor/conf.d/*.conf" > /etc/supervisor/supervisord.conf
 function install_prepare_software_on_opensuse()
 {
     sudo zypper install -y supervisor virtualenv
+
 }
 
 # 在ubuntu上安装v2rayClient
