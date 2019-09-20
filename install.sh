@@ -1,7 +1,6 @@
 #!/bin/bash
 #coding=utf-8
 
-
 # 获取平台类型，mac还是linux平台
 function get_platform_type()
 {
@@ -246,5 +245,4 @@ function main()
 }
 
 main
-
 
