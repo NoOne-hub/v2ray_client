@@ -1,67 +1,11 @@
 #!/bin/bash
 #coding=utf-8
 
-# 获取平台类型，mac还是linux平台
-function get_platform_type()
-{
-    echo $(uname)
-}
-
-# 获取linux发行版名称
-function get_linux_distro()
-{
-    if grep -Eq "Ubuntu" /etc/*-release; then
-        echo "Ubuntu"
-    elif grep -Eq "Deepin" /etc/*-release; then
-        echo "Deepin"
-    elif grep -Eq "LinuxMint" /etc/*-release; then
-        echo "LinuxMint"
-    elif grep -Eq "elementary" /etc/*-release; then
-        echo "elementaryOS"
-    elif grep -Eq "Debian" /etc/*-release; then
-        echo "Debian"
-    elif grep -Eq "CentOS" /etc/*-release; then
-        echo "CentOS"
-    elif grep -Eq "fedora" /etc/*-release; then
-        echo "fedora"
-    elif grep -Eq "openSUSE" /etc/*-release; then
-        echo "openSUSE"
-    elif grep -Eq "Arch Linux" /etc/*-release; then
-        echo "ArchLinux"
-    elif grep -Eq "ManjaroLinux" /etc/*-release; then
-        echo "ManjaroLinux"
-    else
-        echo "Unknow"
-    fi
-}
-
 function get_now_timestamp()
 {
     cur_sec_and_ns=`date '+%s-%N'`
     echo ${cur_sec_and_ns%-*}
 }
-
-
-function install_others() {
-    #安装依赖
-    install_v2ray
-    pip3 install -r requirements.txt
-    pip3 install gunicorn
-
-    #部署后台运行环境,以及开机自启
-    echo "[program:v2rayClient]
-    command=gunicorn -b localhost:8000 -w 4 v2rayClient:app
-    directory=$(pwd)
-    user=$USER
-    autostart=true
-    autorestart=true
-    stopasgroup=true
-    killasgroup=true" > /etc/supervisor/conf.d/v2rayClient.conf
-    sudo supervisord -c /etc/supervisor/supervisord.conf
-    echo "接下来输入update,然后ctrl+d 退出"
-    sudo supervisorctl -c /etc/supervisor/supervisord.conf
-}
-
 
 function install_v2ray() {
     echo "Do you need to install v2rayCore?(Y/N)"
@@ -72,177 +16,40 @@ function install_v2ray() {
     fi
 }
 
-function config_supervisor() {
-    sudo mkdir -m 700 -p /etc/supervisor
-    sudo touch /etc/supervisor/supervisord.conf
-    sudo mkdir -m 700 /etc/supervisor/conf.d
-    sudo echo "; supervisor config file
 
-[unix_http_server]
-file=/var/run/supervisor.sock   ; (the path to the socket file)
-chmod=0700                       ; sockef file mode (default 0700)
-
-[supervisord]
-logfile=/var/log/supervisor/supervisord.log ; (main log file;default \$CWD/supervisord.log)
-pidfile=/var/run/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
-childlogdir=/var/log/supervisor            ; ('AUTO' child log dir, default \$TEMP)
-
-; the below section must remain in the config file for RPC
-; (supervisorctl/web interface) to work, additional interfaces may be
-; added by defining them in separate rpcinterface: sections
-[rpcinterface:supervisor]
-supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
-
-[supervisorctl]
-serverurl=unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
-
-; The [include] section can just contain the \"files\" setting.  This
-; setting can list multiple files (separated by whitespace or
-; newlines).  It can also contain wildcards.  The filenames are
-; interpreted as relative to this file.  Included files *cannot*
-; include files themselves.
-
-[include]
-files = /etc/supervisor/conf.d/*.conf" > /etc/supervisor/supervisord.conf
-
-}
-
-# 安装mac平台必要软件
-function install_prepare_software_on_mac()
-{
-    brew install supervisor virtualenv
-}
-
-# 安装ubuntu必要软件
-function install_prepare_software_on_ubuntu()
-{
-    sudo apt-get update
-    sudo apt-get install -y supervisor virtualenv
-}
-
-# 安装debian必要软件
-function install_prepare_software_on_debian()
-{
-    sudo apt-get update
-    sudo apt-get install -y supervisor virtualenv
-}
-
-# 安装centos必要软件
-function install_prepare_software_on_centos()
-{
-    sudo yum install -y supervisor virtualenv
-    config_supervisor
-}
-
-# 安装fedora必要软件
-function install_prepare_software_on_fedora()
-{
-    sudo dnf install -y supervisor virtualenv
-}
-
-# 安装archlinux必要软件
-function install_prepare_software_on_archlinux()
-{
-    sudo pacman -S --noconfirm supervisor virtualenv
-    config_supervisor
+function install_components() {
+    #安装依赖
+    install_v2ray
+    pip3 install -r requirements.txt
+    git clone https://github.com/Supervisor/supervisor
+    cd supervisor && python setup.py install
+    cd ..
+    #部署后台运行环境,以及开机自启
+    echo_supervisord_conf > config/supervisord.conf
+    SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
+    echo "[program:v2rayClient]
+command=gunicorn -b localhost:8000 -w 4 v2rayClient:app
+directory=$SHELL_FOLDER
+user=$USER
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true" >> config/supervisord.conf
+    supervisord -c config/supervisord.conf
+    echo "接下来输入update,然后ctrl+d 退出"
+    supervisorctl -c config/supervisord.conf
 }
 
 
-# 安装opensuse必要软件
-function install_prepare_software_on_opensuse()
-{
-    sudo zypper install -y supervisor virtualenv
 
-}
-
-# 在ubuntu上安装v2rayClient
-function install_v2rayClient_on_ubuntu()
-{
-    install_prepare_software_on_ubuntu
-    install_others
-}
-
-# 在debian上安装v2rayClient
-function install_v2rayClient_on_debian()
-{
-    install_prepare_software_on_debian
-    install_others
-}
-
-# 在centos上安装v2rayClient
-function install_v2rayClient_on_centos()
-{
-    install_prepare_software_on_centos
-    install_others
-}
-
-# 在fedora上安装v2rayClient
-function install_v2rayClient_on_fedora()
-{
-    install_prepare_software_on_fedora
-    install_others
-}
-
-# 在archlinux上安装v2rayClient
-function install_v2rayClient_on_archlinux()
-{
-    install_prepare_software_on_archlinux
-    install_others
-}
-
-# 在opensuse上安装v2rayClient
-function install_v2rayClient_on_opensuse()
-{
-    install_prepare_software_on_opensuse
-    install_others
-}
-
-
-function install_v2rayClient_on_linux()
-{
-    distro=`get_linux_distro`
-    echo "Linux distro: "${distro}
-
-    if [ ${distro} == "Ubuntu" ]; then
-        install_v2rayClient_on_ubuntu
-    elif [ ${distro} == "Deepin" ]; then
-        install_v2rayClient_on_ubuntu
-    elif [ ${distro} == "LinuxMint" ]; then
-        install_v2rayClient_on_ubuntu
-    elif [ ${distro} == "elementaryOS" ]; then
-        install_v2rayClient_on_ubuntu
-    elif [ ${distro} == "Debian" ]; then
-        install_v2rayClient_on_debian
-    elif [ ${distro} == "CentOS" ]; then
-        install_v2rayClient_on_centos
-    elif [ ${distro} == "fedora" ]; then
-        install_v2rayClient_on_fedora
-    elif [ ${distro} == "openSUSE" ]; then
-        install_v2rayClient_on_opensuse
-    elif [ ${distro} == "ArchLinux" ]; then
-        install_v2rayClient_on_archlinux
-    elif [ ${distro} == "ManjaroLinux" ]; then
-        install_v2rayClient_on_archlinux
-    else
-        echo "Not support linux distro: "${distro}
-    fi
-}
 
 function main()
 {
+  
+    command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
+    command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
     begin=`get_now_timestamp`
-
-    type=`get_platform_type`
-    echo "Platform type: "${type}
-
-    if [ ${type} == "Darwin" ]; then
-        install_v2rayClient_on_mac
-    elif [ ${type} == "Linux" ]; then
-        install_v2rayClient_on_linux
-    else
-        echo "Not support platform type: "${type}
-    fi
-
+    install_components
     end=`get_now_timestamp`
     second=`expr ${end} - ${begin}`
     min=`expr ${second} / 60`

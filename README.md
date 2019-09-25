@@ -19,9 +19,10 @@
 - **注意：root权限下运行，不然无法修改v2ray配置**
 - **注意：root权限下运行，不然无法修改v2ray配置**
 
-要求：python3环境，linux
+要求：python3环境，linux,git,virtualenv
 
-1. 创建虚拟环境（自选) virtualenv -p python3 venv
+
+1. virtualenv -p python3 venv
 2. source venv/bin/activate
 3. cd 到项目目录
 4. 运行 sudo ./install.sh
