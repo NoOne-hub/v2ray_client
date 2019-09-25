@@ -30,10 +30,11 @@ install_test.sh 为热心网友提供的安装脚本，也可以进行测试安�
 5. 按照脚本操作后，将会部署到后台
 6. 部署完成后访问http://127.0.0.1:8000
 
+开机自启自行部署：https://github.com/Supervisor/initscripts
 
 ## 启动停止方法
-1. 启动： supervisorctl start v2rayClient
-2. 停止: supervisortctl stop v2rayClient
+1. 启动： supervisorctl -c config/supervisord.conf start v2rayClient
+2. 停止: supervisortctl -c config/supervisord.conf stop v2rayClient
 
 
 
