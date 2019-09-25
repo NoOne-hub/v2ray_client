@@ -22,7 +22,7 @@
 要求：python3环境，linux,git,virtualenv
 
 
-1. virtualenv -p python3 venv
+1. virtualenv -p python3 --no-site-packages venv
 2. source venv/bin/activate
 3. cd 到项目目录
 4. 运行 sudo ./install.sh

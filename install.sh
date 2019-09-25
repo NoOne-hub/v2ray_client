@@ -45,7 +45,7 @@ killasgroup=true" >> config/supervisord.conf
 
 function main()
 {
-  
+
     command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
     command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
     begin=`get_now_timestamp`
