@@ -7,7 +7,7 @@ export PATH
 [ $(id -u) != "0" ] && { echo "${CFAILURE}Error: You must be root to run this script${CEND}"; exit 1; }
 
 #获取系统名称
-  if grep -Eq "Ubuntu" /etc/*-release; then
+    if grep -Eq "Ubuntu" /etc/*-release; then
         echo "Ubuntu"
 		OS=Ubuntu
     elif grep -Eq "Deepin" /etc/*-release; then
@@ -37,7 +37,7 @@ export PATH
     elif grep -Eq "ManjaroLinux" /etc/*-release; then
         echo "ManjaroLinux"
 		OS=ManjaroLinux
-	elif grep -Eq "Mac" /System/Library/CoreServices/SystemVersion.plist; then
+	  elif grep -Eq "Mac" /System/Library/CoreServices/SystemVersion.plist; then
         echo "Mac"
 		OS=Mac
     else

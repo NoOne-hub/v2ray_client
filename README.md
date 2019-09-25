@@ -21,6 +21,7 @@
 
 要求：python3环境，linux,git,virtualenv
 
+install_test.sh 为热心网友提供的安装脚本，也可以进行测试安装
 
 1. virtualenv -p python3 --no-site-packages venv
 2. source venv/bin/activate
