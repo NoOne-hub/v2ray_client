@@ -50,41 +50,41 @@ fi
 #Ubuntu
 if [ ${OS} == Ubuntu ] || [ ${OS} == Debian || [ ${OS} == LinuxMint || [ ${OS} == elementaryOS [ ${OS} == Deepin ];then
 	apt-get update -y
-	apt-get install git unzip supervisor curl python3-pip -y
-	pip install -r requirements.txt
-	pip install gunicorn
+	apt-get install git unzip supervisor curl python3 python3-pip -y
+	pip3 install -r requirements.txt
+	pip3 install gunicorn
 fi
 #Manjaro&&Arch_Linux
 if [ ${OS} == ManjaroLinux ] || [ ${OS} == Arch Linux ];then
 	pacman -Sy
-	pacman -S --noconfirm git unzip supervisor curl python3-pip
-	pip install -r requirements.txt
-	pip install gunicorn
+	pacman -S --noconfirm git unzip supervisor curl python3 python3-pip
+	pip3 install -r requirements.txt
+	pip3 install gunicorn
 fi
 #CentOS
 if [ ${OS} == CentOS ];then
 	yum update -y
-	yum install git unzip supervisor curl python3-pip -y
-	pip install -r requirements.txt
-	pip install gunicorn
+	yum install git unzip supervisor curl python3 python3-pip -y
+	pip3 install -r requirements.txt
+	pip3 install gunicorn
 fi
 #openSUSE
 if [ ${OS} == openSUSE ];then
-	zypper install git unzip supervisor curl python3-pip -y
-	pip install -r requirements.txt
-	pip install gunicorn
+	zypper install git unzip supervisor curl python3 python3-pip -y
+	pip3 install -r requirements.txt
+	pip3 install gunicorn
 fi
 #fedora
 if [ ${OS} == fedora ];then
-	dnf install git unzip supervisor curl python3-pip -y
-	pip install -r requirements.txt
-	pip install gunicorn
+	dnf install git unzip supervisor curl python3 python3-pip -y
+	pip3 install -r requirements.txt
+	pip3 install gunicorn
 fi
 #Mac
 if [ ${OS} == Mac ];then
-	pip install git unzip supervisor curl python3-pip -y
-	pip install -r requirements.txt
-	pip install gunicorn
+	pip3 install git unzip supervisor curl python3 python3-pip -y
+	pip3 install -r requirements.txt
+	pip3 install gunicorn
 fi
 
 # supervisor配置
@@ -139,6 +139,10 @@ priority=1
 stopasgroup=true
 killasgroup=true
 EOF
+
+#关闭supervisor
+unlink /run/supervisor.sock
+unlink /run/supervisor.sock
 
 supervisord -c /etc/supervisor/supervisord.conf
 echo "接下来输入update,然后ctrl+d 退出"
