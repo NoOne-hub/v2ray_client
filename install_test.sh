@@ -48,14 +48,15 @@ fi
 
 #安装依赖包
 #Ubuntu
-if [ ${OS} == Ubuntu ] || [ ${OS} == Debian || [ ${OS} == LinuxMint || [ ${OS} == elementaryOS [ ${OS} == Deepin ];then
+
+if [ ${OS} == Ubuntu ] || [ ${OS} == Debian ] || [ ${OS} == LinuxMint ] || [ ${OS} == elementaryOS ] || [ ${OS} == Deepin ];then
 	apt-get update -y
 	apt-get install git unzip supervisor curl python3 python3-pip -y
 	pip3 install -r requirements.txt
 	pip3 install gunicorn
 fi
 #Manjaro&&Arch_Linux
-if [ ${OS} == ManjaroLinux ] || [ ${OS} == Arch Linux ];then
+if [ ${OS} == ManjaroLinux ] || [ ${OS} == ArchLinux ];then
 	pacman -Sy
 	pacman -S --noconfirm git unzip supervisor curl python3 python3-pip
 	pip3 install -r requirements.txt
@@ -63,10 +64,11 @@ if [ ${OS} == ManjaroLinux ] || [ ${OS} == Arch Linux ];then
 fi
 #CentOS
 if [ ${OS} == CentOS ];then
-	yum update -y
-	yum install git unzip supervisor curl python3 python3-pip -y
+
+	yum install git unzip curl python3 python3-pip -y
 	pip3 install -r requirements.txt
 	pip3 install gunicorn
+	pip3 install supervisor
 fi
 #openSUSE
 if [ ${OS} == openSUSE ];then
@@ -129,19 +131,16 @@ curl -L -s https://install.direct/go.sh | bash
 rm -rf /etc/supervisor/conf.d/v2rayClient.conf
 touch /etc/supervisor/conf.d/v2rayClient.conf
 cat>>/etc/supervisor/conf.d/v2rayClient.conf<<EOF
-[program:v2ray.fun]
-command=/usr/local/V2ray.Fun/start.sh run
-stdout_logfile=/var/log/v2ray.fun
+command=gunicorn -b localhost:8000 -w 4 v2rayClient:app
+directory=$(pwd)
+user=$USER
 autostart=true
 autorestart=true
-startsecs=5
-priority=1
 stopasgroup=true
 killasgroup=true
 EOF
 
 #关闭supervisor
-unlink /run/supervisor.sock
 unlink /run/supervisor.sock
 
 supervisord -c /etc/supervisor/supervisord.conf
