@@ -51,5 +51,8 @@ wget -c https://github.com/NoOne-hub/v2ray_client/archive/master.tar.gz && tar x
 git clone https://github.com/NoOne-hub/v2ray_client.git && cd /v2ray_client && ./install_test.sh
 ```
 
+### 启动停止方法
+1. 启动： `supervisorctl /etc/supervisor/supervisord.conf start v2rayClient`
+2. 停止： `supervisorctl /etc/supervisor/supervisord.conf stop v2rayClient`
 
 
