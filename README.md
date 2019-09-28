@@ -31,23 +31,25 @@
 开机自启自行部署：https://github.com/Supervisor/initscripts
 
 ## 启动停止方法
-1. 启动： supervisorctl -c config/supervisord.conf start v2rayClient
-2. 停止: supervisortctl -c config/supervisord.conf stop v2rayClient
-
-
+1. 启动： `supervisorctl -c config/supervisord.conf start v2rayClient`
+2. 停止： `supervisorctl -c config/supervisord.conf stop v2rayClient`
 
 
 ## 配置方法
 
 具体写入的日志和配置文件在config.py里自行修改
 
-## install_test.sh 
-### 为热心网友提供的一键安装脚本，会自动安装环境,两个都一样的,下载方式不同而已,也可以进行测试安装.
+
+
+### install_test.sh 是热心网友提供的一键安装脚本，会自动安装环境,下面两个安装脚本都一样的,下载方式不同而已,也可以进行测试安装.
+
+``` 
+wget -c https://github.com/NoOne-hub/v2ray_client/archive/master.tar.gz && tar xzf master.tar.gz && cd v2ray_client-master && ./install_test.sh
+```
 
 ```
 git clone https://github.com/NoOne-hub/v2ray_client.git && cd /v2ray_client && ./install_test.sh
 ```
 
-``` 
-wget -c https://github.com/NoOne-hub/v2ray_client/archive/master.tar.gz && tar xzf master.tar.gz && cd v2ray_client-master && ./install_test.sh
-```
+
+
