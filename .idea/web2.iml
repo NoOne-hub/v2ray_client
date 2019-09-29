@@ -9,7 +9,7 @@
       <excludeFolder url="file://$MODULE_DIR$/../web2 (another copy)/svenv" />
       <excludeFolder url="file://$MODULE_DIR$/../web2 (another copy)/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (venv) (2)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.7 (venv)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

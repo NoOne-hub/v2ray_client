@@ -27,7 +27,7 @@ function install_components() {
     #部署后台运行环境,以及开机自启
     echo_supervisord_conf > config/supervisord.conf
     SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
-    echo "[program:v2rayClient]
+    sudo echo "[program:v2rayClient]
 command=gunicorn -b localhost:8000 -w 4 v2rayClient:app
 directory=$SHELL_FOLDER
 user=$USER
@@ -45,7 +45,6 @@ killasgroup=true" >> config/supervisord.conf
 
 function main()
 {
-
     command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
     command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
     begin=`get_now_timestamp`
