@@ -41,7 +41,7 @@
 
 
 
-### install_test.sh 是热心网友提供的一键安装脚本，会自动安装环境,下面两个安装脚本都一样的,下载方式不同而已,也可以进行测试安装.
+#### install_test.sh 是热心网友提供的一键安装脚本，会自动安装环境,下面两个安装脚本都一样的,下载方式不同而已,也可以进行测试安装.
 
 ``` 
 wget -c https://github.com/NoOne-hub/v2ray_client/archive/master.tar.gz && tar xzf master.tar.gz && cd v2ray_client-master && ./install_test.sh
@@ -52,7 +52,7 @@ git clone https://github.com/NoOne-hub/v2ray_client.git && cd /v2ray_client && .
 ```
 
 ### 启动停止方法
-1. 启动： `supervisorctl /etc/supervisor/supervisord.conf start v2rayClient`
-2. 停止： `supervisorctl /etc/supervisor/supervisord.conf stop v2rayClient`
+1. 启动： `supervisorctl -c /etc/supervisor/supervisord.conf start v2rayClient`
+2. 停止： `supervisorctl -c /etc/supervisor/supervisord.conf stop v2rayClient`
 
 
