@@ -18,17 +18,18 @@ function install_v2ray() {
 
 
 function install_components() {
+    #切换到虚拟环境
+
     #安装依赖
     install_v2ray
+    source venv/bin/activate
     pip3 install -r requirements.txt
-    git clone https://github.com/Supervisor/supervisor
-    cd supervisor && python setup.py install
-    cd ..
-    #部署后台运行环境,以及开机自启
+    #部署后台运行环境
     echo_supervisord_conf > config/supervisord.conf
     SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
-    sudo echo "[program:v2rayClient]
-command=gunicorn -b localhost:8000 -w 4 v2rayClient:app
+    sudo kill -9 $(ps -aux|grep supervisor| awk '{print$2}')
+    echo "[program:v2rayClient]
+command=gunicorn -b 0.0.0.0:8000 -w 4 v2rayClient:app
 directory=$SHELL_FOLDER
 user=$USER
 autostart=true
@@ -45,8 +46,8 @@ killasgroup=true" >> config/supervisord.conf
 
 function main()
 {
-    command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
-    command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
+    #command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
+    #command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
     begin=`get_now_timestamp`
     install_components
     end=`get_now_timestamp`

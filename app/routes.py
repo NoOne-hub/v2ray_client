@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, redirect, url_for, request, jsonify
+from flask import render_template, url_for, request
 import json
 import subprocess
 from urllib.parse import unquote
@@ -9,6 +9,7 @@ from app.v2rayControl.vmess2json import gen_client
 from app.models import Parse, subscription
 import re
 import urllib
+
 
 '''
 获取v2ray运行状态
