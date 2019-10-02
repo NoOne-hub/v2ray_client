@@ -65,6 +65,7 @@ function install_components() {
     if [ $? -ne 0 ]; then
       echo "执行出错，请检查是否root运行"
     else
+      # 开机启动
       start_on_linux $SHELL_FOLDER
     fi
 }
