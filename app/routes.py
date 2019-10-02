@@ -10,7 +10,6 @@ from app.models import Parse, subscription
 import re
 import urllib
 
-
 '''
 获取v2ray运行状态
 '''
@@ -61,6 +60,7 @@ def restart():
 
 
 def json2config(data, sub_url=""):
+    print(data)
     v2 = v2rayConfig(
         add=data['add'],
         aid=data['aid'],
@@ -105,11 +105,17 @@ def set_message(code=200, url=""):
 '''
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=["GET", "POST"])
+@app.route('/index', methods=["GET", "POST"])
 def index():
-    configs = v2rayConfig.query.order_by(v2rayConfig.num)
-    return render_template('index.html', v2rayconfigs=configs, title="配置选择")
+    page = request.args.get('page', 1, type=int)
+    configs = v2rayConfig.query.order_by(v2rayConfig.status.desc()).paginate(page, app.config['PER_PAGE'], False)
+    next_url = url_for('index', page=configs.next_num) \
+        if configs.has_next else None
+    prev_url = url_for('index', page=configs.prev_num) \
+        if configs.has_prev else None
+    return render_template('index.html', v2rayconfigs=configs.items, title="配置选择", next_url=next_url,
+                           prev_url=prev_url)
 
 
 @app.route('/config', methods=["GET"])
@@ -132,26 +138,34 @@ def log():
 
 @app.route('/get_access_log')
 def get_access_log():
-    with open(app.config['V2RAY_ACCESS_LOG']) as f:
-        content = f.read().split("\n")
-        min_length = min(20, len(content))
-        content = content[-min_length:]
-        string = ""
-        for i in range(min_length):
-            string = string + content[i] + "<br>"
-    return string
+    try:
+        with open(app.config['V2RAY_ACCESS_LOG']) as f:
+            content = f.read().split("\n")
+            min_length = min(20, len(content))
+            content = content[-min_length:]
+            string = ""
+            for i in range(min_length):
+                string = string + content[i] + "<br>"
+        return string
+    except PermissionError as e:
+        return " Permission denied "
+
+
 
 
 @app.route('/get_error_log')
 def get_error_log():
-    with open(app.config['V2RAY_ERROR_LOG']) as f:
-        content = f.read().split("\n")
-        min_length = min(20, len(content))
-        content = content[-min_length:]
-        string = ""
-        for i in range(min_length):
-            string = string + content[i] + "<br>"
-    return string
+    try:
+        with open(app.config['V2RAY_ERROR_LOG']) as f:
+            content = f.read().split("\n")
+            min_length = min(20, len(content))
+            content = content[-min_length:]
+            string = ""
+            for i in range(min_length):
+                string = string + content[i] + "<br>"
+        return string
+    except PermissionError as e:
+        return " Permission denied "
 
 
 '''
@@ -246,9 +260,8 @@ def generate_config():
     data = json.loads(request.get_data(as_text=True))
     print(data)
     # 修改部分
-    saveConfig = v2rayConfig.query.filter(v2rayConfig.num == data['num']).first()
-    print(saveConfig.num)
-    if saveConfig is not None:
+    if 'num' in data.keys():
+        saveConfig = v2rayConfig.query.filter(v2rayConfig.num == data['num']).first()
         saveConfig.id = data['uuid']
         saveConfig.add = data['addr']
         saveConfig.port = data['port']
@@ -303,19 +316,22 @@ def editById():
 
 @app.route('/api/start_service', methods=['POST', "GET"])
 def start_service():
-    data = request.get_data(as_text=True)
-    num = data.split('=')[1]
-    startConfig = v2rayConfig.query.filter(v2rayConfig.status == "on")
-    for i in startConfig:
-        i.status = "off"
-    startConfig = v2rayConfig.query.filter(v2rayConfig.num == num).first()
-    myjson = json.dumps(startConfig, cls=AlchemyEncoder)
-    print(myjson)
-    gen_client(json.loads(myjson))
-    startConfig.status = "on"
-    db.session.commit()
-    restart()
-    return set_message(200)
+    try:
+        data = request.get_data(as_text=True)
+        num = data.split('=')[1]
+        startConfig = v2rayConfig.query.filter(v2rayConfig.status == "on")
+        for i in startConfig:
+            i.status = "off"
+        startConfig = v2rayConfig.query.filter(v2rayConfig.num == num).first()
+        myjson = json.dumps(startConfig, cls=AlchemyEncoder)
+        print(myjson)
+        gen_client(json.loads(myjson))
+        startConfig.status = "on"
+        db.session.commit()
+        restart()
+        return set_message(200)
+    except PermissionError as e:
+        return set_message(400)
 
 
 @app.route('/api/stop_service', methods=['POST', "GET"])

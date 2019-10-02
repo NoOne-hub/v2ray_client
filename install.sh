@@ -16,6 +16,37 @@ function install_v2ray() {
     fi
 }
 
+function ReadMeFirst() {
+    echo "Do you have read README.md?(Y/N)"
+    read choice
+    if [ $choice != "Y" ]||[ $choice != "y" ];
+    then
+      echo "Read it first!!!Change the config second!"
+      exit 1;
+    fi
+}
+
+function write_config() {
+cat >> config/supervisord.conf << EOF
+[program:v2rayClient]
+command=gunicorn -b 0.0.0.0:8000 -w 4 v2rayClient:app
+directory=$1
+user=$USER
+autostart=true
+autorestart=true
+stopasgroup=true
+killasgroup=true
+EOF
+}
+
+function start_on_linux() {
+cat >> /etc/rc.local << EOF
+source $1/venv/bin/activate
+supervisord -c $1/config/supervisord.conf
+supervisorctl -c $1/config/supervisord.conf
+EOF
+chmod +x /etc/rc.local
+}
 
 function install_components() {
     #切换到虚拟环境
@@ -23,22 +54,19 @@ function install_components() {
     #安装依赖
     install_v2ray
     source venv/bin/activate
-    pip3 install -r requirements.txt
     #部署后台运行环境
     echo_supervisord_conf > config/supervisord.conf
     SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
     sudo kill -9 $(ps -aux|grep supervisor| awk '{print$2}')
-    echo "[program:v2rayClient]
-command=gunicorn -b 0.0.0.0:8000 -w 4 v2rayClient:app
-directory=$SHELL_FOLDER
-user=$USER
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true" >> config/supervisord.conf
+    write_config $SHELL_FOLDER
     supervisord -c config/supervisord.conf
-    echo "接下来输入update,然后ctrl+d 退出"
+    echo "接下来ctrl+d 退出"
     supervisorctl -c config/supervisord.conf
+    if [ $? -ne 0 ]; then
+      echo "执行出错，请检查是否root运行"
+    else
+      start_on_linux $SHELL_FOLDER
+    fi
 }
 
 
@@ -49,6 +77,7 @@ function main()
     #command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
     #command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
     begin=`get_now_timestamp`
+    ReadMeFirst
     install_components
     end=`get_now_timestamp`
     second=`expr ${end} - ${begin}`

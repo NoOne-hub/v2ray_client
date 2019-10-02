@@ -5,7 +5,7 @@
         <p></p>
         <div class="mdui-row">
             <div class="mdui-table-fluid">
-                <div class="mdui-toolbar mdui-color-theme">
+                <div class="mdui-toolbar mdui-color-theme ">
                     <div class="mdui-dialog" id="inputvmess-dialog">
                         <div class="mdui-dialog-title">添加Vmess链接</div>
                         <div class="mdui-dialog-content">
@@ -60,7 +60,17 @@
 
                     <a href="javascript:;" class="mdui-btn mdui-btn-icon"><i
                             class="mdui-icon material-icons">menu</i></a>
-                    <span class="mdui-typo-title">配置管理面板</span>
+                    <span class="mdui-typo-title ">配置管理面板</span>
+                    {% if prev_url %}
+                        <td><a href="{{ prev_url }}">上一页</a></td>
+                    {% else %}
+                        <td><a href = "javascript:;" onclick = "alert_first()">上一页</a></td>
+                    {% endif %}
+                    {% if next_url %}
+                        <td><a href="{{ next_url }}">下一页</a></td>
+                    {% else %}
+                        <td><a href = "javascript:;" onclick = "alert_last()">下一页</a></td>
+                    {% endif %}
                     <div class="mdui-toolbar-spacer"></div>
                     <button class="mdui-fab mdui-fab-mini mdui-ripple" onclick="start()"><i
                             class="mdui-icon material-icons">play_arrow</i></button>
@@ -88,12 +98,21 @@
                         <tr id="row-{{ i.num }}">
                             <td id="row--2">{{ i.ps }}</td>
                             <td id="row--3">{{ i.add }}</td>
-                            <td id="row--4">{{ i.status }}</td>
+                            {% if i.status != 'on' %}
+                                <td id="row--4">
+                                    <i class="mdui-icon material-icons mdui-text-color-red-accent">brightness_1</i>
+                                </td>
+                            {% else %}
+                                <td id="row--4">
+                                    <i class="mdui-icon material-icons mdui-text-color-green">brightness_1</i>
+                                </td>
+                            {% endif %}
                             <td id="row--1" hidden="True">{{ i.num }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
+
             </div>
 
         </div>
@@ -112,6 +131,14 @@
         function input_vmess() {
             let inst = new mdui.Dialog('#inputvmess-dialog');
             inst.open()
+        }
+
+        function alert_first() {
+            message("已经是第一页");
+        }
+
+        function alert_last() {
+            message("已经是最后一页");
         }
 
         function message(m_message) {
@@ -161,7 +188,7 @@
                 },
                 success: function (data) {
                     if (data['status'] == "Failure") {
-                        message("启动配置失败，已经有使用的配置了！！");
+                        message("权限不足，请以root权限运行此程序");
                     } else {
                         message("成功");
                         location.reload();
