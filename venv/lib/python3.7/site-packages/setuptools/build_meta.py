@@ -26,7 +26,6 @@ bug reports or API stability):
 Again, this is not a formal definition! Just a "taste" of the module.
 """
 
-import io
 import os
 import sys
 import tokenize
@@ -35,10 +34,6 @@ import contextlib
 
 import setuptools
 import distutils
-from setuptools.py31compat import TemporaryDirectory
-
-from pkg_resources import parse_requirements
-from pkg_resources.py31compat import makedirs
 
 __all__ = ['get_requires_for_build_sdist',
            'get_requires_for_build_wheel',
@@ -55,9 +50,7 @@ class SetupRequirementsError(BaseException):
 
 class Distribution(setuptools.dist.Distribution):
     def fetch_build_eggs(self, specifiers):
-        specifier_list = list(map(str, parse_requirements(specifiers)))
-
-        raise SetupRequirementsError(specifier_list)
+        raise SetupRequirementsError(specifiers)
 
     @classmethod
     @contextlib.contextmanager
@@ -102,14 +95,6 @@ def _file_with_extension(directory, extension):
     return file
 
 
-def _open_setup_script(setup_script):
-    if not os.path.exists(setup_script):
-        # Supply a default setup.py
-        return io.StringIO(u"from setuptools import setup; setup()")
-
-    return getattr(tokenize, 'open', open)(setup_script)
-
-
 class _BuildMetaBackend(object):
 
     def _fix_config(self, config_settings):
@@ -135,10 +120,9 @@ class _BuildMetaBackend(object):
         # Correctness comes first, then optimization later
         __file__ = setup_script
         __name__ = '__main__'
-
-        with _open_setup_script(__file__) as f:
-            code = f.read().replace(r'\r\n', r'\n')
-
+        f = getattr(tokenize, 'open', open)(__file__)
+        code = f.read().replace('\\r\\n', '\\n')
+        f.close()
         exec(compile(code, __file__, 'exec'), locals())
 
     def get_requires_for_build_wheel(self, config_settings=None):
@@ -180,38 +164,28 @@ class _BuildMetaBackend(object):
 
         return dist_infos[0]
 
-    def _build_with_temp_dir(self, setup_command, result_extension,
-                             result_directory, config_settings):
-        config_settings = self._fix_config(config_settings)
-        result_directory = os.path.abspath(result_directory)
-
-        # Build in a temporary directory, then copy to the target.
-        makedirs(result_directory, exist_ok=True)
-        with TemporaryDirectory(dir=result_directory) as tmp_dist_dir:
-            sys.argv = (sys.argv[:1] + setup_command +
-                        ['--dist-dir', tmp_dist_dir] +
-                        config_settings["--global-option"])
-            self.run_setup()
-
-            result_basename = _file_with_extension(tmp_dist_dir, result_extension)
-            result_path = os.path.join(result_directory, result_basename)
-            if os.path.exists(result_path):
-                # os.rename will fail overwriting on non-Unix.
-                os.remove(result_path)
-            os.rename(os.path.join(tmp_dist_dir, result_basename), result_path)
-
-        return result_basename
-
-
     def build_wheel(self, wheel_directory, config_settings=None,
                     metadata_directory=None):
-        return self._build_with_temp_dir(['bdist_wheel'], '.whl',
-                                         wheel_directory, config_settings)
+        config_settings = self._fix_config(config_settings)
+        wheel_directory = os.path.abspath(wheel_directory)
+        sys.argv = sys.argv[:1] + ['bdist_wheel'] + \
+            config_settings["--global-option"]
+        self.run_setup()
+        if wheel_directory != 'dist':
+            shutil.rmtree(wheel_directory)
+            shutil.copytree('dist', wheel_directory)
+
+        return _file_with_extension(wheel_directory, '.whl')
 
     def build_sdist(self, sdist_directory, config_settings=None):
-        return self._build_with_temp_dir(['sdist', '--formats', 'gztar'],
-                                         '.tar.gz', sdist_directory,
-                                         config_settings)
+        config_settings = self._fix_config(config_settings)
+        sdist_directory = os.path.abspath(sdist_directory)
+        sys.argv = sys.argv[:1] + ['sdist', '--formats', 'gztar'] + \
+            config_settings["--global-option"] + \
+            ["--dist-dir", sdist_directory]
+        self.run_setup()
+
+        return _file_with_extension(sdist_directory, '.tar.gz')
 
 
 class _BuildMetaLegacyBackend(_BuildMetaBackend):

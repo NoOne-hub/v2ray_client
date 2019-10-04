@@ -24,7 +24,6 @@ try:
 except ImportError:
     curses = None
 
-
 def _stderr_supports_color():
     color = False
     if curses and hasattr(sys.stderr, 'isatty') and sys.stderr.isatty():
@@ -36,14 +35,13 @@ def _stderr_supports_color():
             pass
     return color
 
-
 class LogFormatter(logging.Formatter):
     """Log formatter with colour support
     """
     DEFAULT_COLORS = {
-        logging.INFO: 2,  # Green
-        logging.WARNING: 3,  # Yellow
-        logging.ERROR: 1,  # Red
+        logging.INFO: 2, # Green
+        logging.WARNING: 3, # Yellow
+        logging.ERROR: 1, # Red
         logging.CRITICAL: 1,
     }
 
@@ -77,8 +75,7 @@ class LogFormatter(logging.Formatter):
                 fg_color = str(fg_color, "ascii")
 
             for levelno, code in self.DEFAULT_COLORS.items():
-                self._colors[levelno] = str(
-                    curses.tparm(fg_color, code), "ascii")
+                self._colors[levelno] = str(curses.tparm(fg_color, code), "ascii")
             self._normal = str(curses.tigetstr("sgr0"), "ascii")
 
             scr = curses.initscr()
@@ -86,16 +83,15 @@ class LogFormatter(logging.Formatter):
             curses.endwin()
         else:
             self._normal = ''
-            # Default width is usually 80, but too wide is
-            # worse than too narrow
+            # Default width is usually 80, but too wide is worse than too narrow
             self.termwidth = 70
 
     def formatMessage(self, record):
-        mlen = len(record.message)
+        l = len(record.message)
         right_text = '{initial}-{name}'.format(initial=record.levelname[0],
                                                name=record.name)
-        if mlen + len(right_text) < self.termwidth:
-            space = ' ' * (self.termwidth - (mlen + len(right_text)))
+        if l + len(right_text) < self.termwidth:
+            space = ' ' * (self.termwidth - (l + len(right_text)))
         else:
             space = '  '
 
@@ -106,7 +102,6 @@ class LogFormatter(logging.Formatter):
             start_color = end_color = ''
 
         return record.message + space + start_color + right_text + end_color
-
 
 def enable_colourful_output(level=logging.INFO):
     handler = logging.StreamHandler()

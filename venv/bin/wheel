@@ -1,4 +1,4 @@
-#!/home/greenhand/v2ray_client/venv/bin/python3
+#!/home/greenhand/v2ray/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

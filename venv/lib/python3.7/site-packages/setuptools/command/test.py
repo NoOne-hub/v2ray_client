@@ -15,7 +15,6 @@ from pkg_resources import (resource_listdir, resource_exists, normalize_path,
                            working_set, _namespace_packages, evaluate_marker,
                            add_activation_listener, require, EntryPoint)
 from setuptools import Command
-from .build_py import _unique_everseen
 
 __metaclass__ = type
 
@@ -187,7 +186,7 @@ class test(Command):
         orig_pythonpath = os.environ.get('PYTHONPATH', nothing)
         current_pythonpath = os.environ.get('PYTHONPATH', '')
         try:
-            prefix = os.pathsep.join(_unique_everseen(paths))
+            prefix = os.pathsep.join(paths)
             to_join = filter(None, [prefix, current_pythonpath])
             new_path = os.pathsep.join(to_join)
             if new_path:

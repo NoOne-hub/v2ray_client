@@ -17,9 +17,9 @@ except ImportError:
         errors on deletion.
         """
 
-        def __init__(self, **kwargs):
+        def __init__(self):
             self.name = None  # Handle mkdtemp raising an exception
-            self.name = tempfile.mkdtemp(**kwargs)
+            self.name = tempfile.mkdtemp()
 
         def __enter__(self):
             return self.name
