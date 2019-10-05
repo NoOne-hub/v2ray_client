@@ -53,7 +53,7 @@ function install_components() {
 
     #安装依赖
     install_v2ray
-    source venv/bin/activate
+    pip3 install -r requirements.txt
     #部署后台运行环境
     echo_supervisord_conf > config/supervisord.conf
     SHELL_FOLDER=$(cd "$(dirname "$0")";pwd)
