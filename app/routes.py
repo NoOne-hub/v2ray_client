@@ -30,7 +30,8 @@ def get_status():
 
 
 def start():
-    subprocess.Popen("kill $(ps -ef|grep 'v2ray -config='|awk '{print$1}')", shell=True)
+    subprocess.Popen("kill $(ps -ef|grep 'v2ray -config'|awk '{print$1}')", shell=True)
+
     subprocess.Popen("v2ray -config /etc/v2ray/config.json &", shell=True)
     return "OK"
 
@@ -51,7 +52,7 @@ def stop():
 
 
 def restart():
-    subprocess.Popen("kill $(ps -ef|grep 'v2ray -config='|awk '{print$1}')", shell=True)
+    subprocess.Popen("kill $(ps -ef|grep 'v2ray -config'|awk '{print$1}')", shell=True)
     subprocess.Popen("v2ray -config /etc/v2ray/config.json &", shell=True)
     return "OK"
 
