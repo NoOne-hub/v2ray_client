@@ -27,7 +27,7 @@ fi
 echo "面板密码为(默认为1234567890):"
 read passwd
 if [ -z "${user}" ];then
- user="1234567890"
+ passwd="1234567890"
 fi
 
 cat >> config.py << EOF
