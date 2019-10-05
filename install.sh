@@ -64,10 +64,10 @@ function install_components() {
     supervisorctl -c config/supervisord.conf
     if [ $? -ne 0 ]; then
       echo "执行出错，请检查是否root运行"
-    else
+    #else
       # 开机启动
-      start_on_linux $SHELL_FOLDER
-    fi
+     # start_on_linux $SHELL_FOLDER
+    #fi
 }
 
 

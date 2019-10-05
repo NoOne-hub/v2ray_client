@@ -1,4 +1,4 @@
-#!/home/greenhand/v2ray/venv/bin/python
+#!/home/greenhand/v2ray_client/venv/bin/python
 
 import sys
 import getopt

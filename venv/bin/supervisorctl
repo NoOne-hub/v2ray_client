@@ -1,4 +1,4 @@
-#!/home/greenhand/v2ray/venv/bin/python
+#!/home/greenhand/v2ray_client/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'supervisor==4.1.0.dev0','console_scripts','supervisorctl'
 __requires__ = 'supervisor==4.1.0.dev0'
 import re
