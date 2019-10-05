@@ -67,7 +67,7 @@ function install_components() {
     #else
       # 开机启动
      # start_on_linux $SHELL_FOLDER
-    #fi
+    fi
 }
 
 
