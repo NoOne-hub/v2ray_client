@@ -17,13 +17,23 @@ function install_v2ray() {
 }
 
 function ReadMeFirst() {
-    echo "Do you have read README.md?(Y/N)"
-    read choice
-    if [ $choice != "Y" ] && [ $choice != "y" ];
-    then
-      echo "Read it first!!!Change the config second!"
-      exit 1;
-    fi
+echo "请输入面板用户名(默认为NoOne-hub)"
+read user
+if [ -z "${user}" ];then
+ user="NoOne-hub"
+fi
+
+echo "面板密码为(默认为1234567890):"
+read passwd
+if [ -z "${user}" ];then
+ user="1234567890"
+fi
+
+cat >> config.py << EOF
+    BASIC_AUTH_USERNAME = $user
+    BASIC_AUTH_PASSWORD = $passwd
+    BASIC_AUTH_FORCE = True
+EOF
 }
 
 function write_config() {
@@ -75,8 +85,6 @@ function install_components() {
 
 function main()
 {
-    #command -v git >/dev/null 2>&1 || { echo >&2 "I require git but it's not installed.  Aborting."; exit 1; }
-    #command -v virtualenv >/dev/null 2>&1 || { echo >&2 "I require virtualenv but it's not installed.  Aborting."; exit 1; }
     begin=`get_now_timestamp`
     ReadMeFirst
     install_components

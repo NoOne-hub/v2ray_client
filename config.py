@@ -13,6 +13,3 @@ class Config(object):
     V2RAY_ERROR_LOG = "/var/log/v2ray/error.log"
     V2RAY_ACCESS_LOG = "/var/log/v2ray/access.log"
     PER_PAGE = 13
-    BASIC_AUTH_USERNAME = "NoOne-hub"
-    BASIC_AUTH_PASSWORD = "1234567890"
-    BASIC_AUTH_FORCE = True
