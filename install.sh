@@ -26,7 +26,7 @@ fi
 
 echo "面板密码为(默认为1234567890):"
 read passwd
-if [ -z "${user}" ];then
+if [ -z "${passwd}" ];then
  passwd="1234567890"
 fi
 
