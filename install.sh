@@ -1,5 +1,6 @@
 #!/bin/bash
 #coding=utf-8
+set -e
 
 function get_now_timestamp()
 {
@@ -30,8 +31,8 @@ if [ -z "${user}" ];then
 fi
 
 cat >> config.py << EOF
-    BASIC_AUTH_USERNAME = $user
-    BASIC_AUTH_PASSWORD = $passwd
+    BASIC_AUTH_USERNAME = "$user"
+    BASIC_AUTH_PASSWORD = "$passwd"
     BASIC_AUTH_FORCE = True
 EOF
 }
