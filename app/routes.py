@@ -30,7 +30,8 @@ def get_status():
 
 
 def start():
-    subprocess.Popen('service v2ray start', shell=True)
+    subprocess.Popen('''kill $(ps -A|grep 'v2ray -config='|awk '{print$1}') && v2ray -c /etc/v2ray/config.json''',
+                     shell=True)
     return "OK"
 
 
@@ -40,7 +41,7 @@ def start():
 
 
 def stop():
-    subprocess.Popen('service v2ray stop', shell=True)
+    subprocess.Popen("kill $(ps -A|grep 'v2ray -config='|awk '{print$1}')", shell=True)
     return "OK"
 
 
@@ -50,7 +51,8 @@ def stop():
 
 
 def restart():
-    subprocess.Popen('service v2ray restart', shell=True)
+    subprocess.Popen('''kill $(ps -A|grep 'v2ray -config='|awk '{print$1}') && v2ray -c /etc/v2ray/config.json''',
+                     shell=True)
     return "OK"
 
 
@@ -149,8 +151,6 @@ def get_access_log():
         return string
     except PermissionError as e:
         return " Permission denied "
-
-
 
 
 @app.route('/get_error_log')
