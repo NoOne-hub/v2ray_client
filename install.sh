@@ -1,6 +1,5 @@
 #!/bin/bash
 #coding=utf-8
-set -e
 
 function get_now_timestamp()
 {
@@ -75,6 +74,7 @@ function install_components() {
     supervisorctl -c config/supervisord.conf
     if [ $? -ne 0 ]; then
       echo "执行出错，请检查是否root运行"
+      exit
     #else
       # 开机启动
      # start_on_linux $SHELL_FOLDER

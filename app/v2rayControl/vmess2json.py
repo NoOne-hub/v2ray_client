@@ -81,20 +81,8 @@ TPL["CLIENT"] = """
                         "203.0.113.0/24",
                         "::1/128",
                         "fc00::/7",
-                        "fe80::/10",
-                        "geoip:cn"
+                        "fe80::/10"
                     ],
-                    "domain": [
-                        "geosite:cn"
-                    ],
-                    "outboundTag": "direct"
-                },
-                {
-                    "type": "chinasites",
-                    "outboundTag": "direct"
-                },
-                {
-                    "type": "chinaip",
                     "outboundTag": "direct"
                 }
             ]
