@@ -5,6 +5,30 @@ import urllib
 import json
 
 
+class Others:
+
+    @staticmethod
+    def get_all():
+        with open("config/v2ray/others.json") as v2ray_config:
+            json_content = json.load(v2ray_config)
+        return json_content
+
+    @staticmethod
+    def set_info(type, aim):
+        exist = ["DOMAINSTRATEGY", "RULES", "V2RAY_PATH", "LOCALDNS", "INBOUNDS", "V2RAY_ERROR_LOG", "V2RAY_ACCESS_LOG"]
+        if type not in exist:
+            return False
+        print(type)
+        print(aim)
+        with open("config/v2ray/others.json") as v2ray_config:
+            json_content = json.load(v2ray_config)
+            json_content[type] = aim
+
+        with open('config/v2ray/others.json', "w") as f:
+            f.write(json.dumps(json_content, indent=2))
+        return True
+
+
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):

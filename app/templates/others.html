@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="mdui-container">
+        <p></p>
+        <div class="mdui-row">
+            <div class="mdui-table-fluid">
+                <table class="mdui-table">
+                    <thead>
+                    <tr>
+                        <th>参数</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                    <tr>
+                        <td>socks5端口</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="socks5" class="mdui-textfield-input" type="text" placeholder="端口号"
+                                           {% if socks5 %} value={{ socks5 }} {% else %} value="10808" {% endif %}
+                                    />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="vmess-config">
+                        <td>域名策略</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <form id="strategy" action="##">
+                                        <select name="routeChoice" class="mdui-select" mdui-select>
+                                            {% if config['DOMAINSTRATEGY'] == 'Asis' %}
+                                            <option id="Asis" value="1" selected> Asis</option>
+                                            <option id="IPIfNonMatch" value="2"> IPIfNonMatch</option>
+                                            <option id="IPOnDemand" value="3"> IPOnDemand</option>
+                                            {% elif  config['DOMAINSTRATEGY'] == 'IPIfNonMatch' %}
+                                            <option id="Asis" value="1" > Asis</option>
+                                            <option id="IPIfNonMatch" value="2" selected> IPIfNonMatch</option>
+                                            <option id="IPOnDemand" value="3"> IPOnDemand</option>
+                                            {% else %}
+                                            <option id="Asis" value="1" > Asis</option>
+                                            <option id="IPIfNonMatch" value="2"> IPIfNonMatch</option>
+                                            <option id="IPOnDemand" value="3" selected> IPOnDemand</option>
+                                            {% endif %}
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="vmess-config">
+                        <td>路由模式</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <form id="route" action="##">
+                                        <select name="routeChoice" class="mdui-select" mdui-select>
+                                            {% if config['RULES'] == 'all'%}
+                                            <option id="all" value="1" selected> 全局</option>
+                                            <option id="bpL" value="2"> 绕过局域网地址</option>
+                                            <option id="bpA" value="3"> 绕过大陆地址</option>
+                                            <option id="bpLAA" value="4"> 绕过局域网及大陆地址</option>
+                                            {% elif config['RULES'] == 'bpL' %}
+                                            <option id="all" value="1" > 全局</option>
+                                            <option id="bpL" value="2" selected> 绕过局域网地址</option>
+                                            <option id="bpA" value="3"> 绕过大陆地址</option>
+                                            <option id="bpLAA" value="4"> 绕过局域网及大陆地址</option>
+                                            {% elif config['RULES'] == 'bpA' %}
+                                            <option id="all" value="1" > 全局</option>
+                                            <option id="bpL" value="2"> 绕过局域网地址</option>
+                                            <option id="bpA" value="3" selected> 绕过大陆地址</option>
+                                            <option id="bpLAA" value="4"> 绕过局域网及大陆地址</option>
+                                            {% else %}
+                                            <option id="all" value="1" > 全局</option>
+                                            <option id="bpL" value="2"> 绕过局域网地址</option>
+                                            <option id="bpA" value="3"> 绕过大陆地址</option>
+                                            <option id="bpLAA" value="4" selected> 绕过局域网及大陆地址</option>
+                                            {% endif %}
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>http端口</td>
+                        <td>
+                            <div class="mdui-row">
+                                <div class="mdui-col-md-4" style="margin: 3px">
+                                    <input id="http" class="mdui-textfield-input" type="text" placeholder="端口号"
+                                           {% if http %} value={{ http }} {% else %} value="10809" {% endif %}
+                                    />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <td>运行控制
+                        <i class="mdui-icon material-icons mdui-text-color-grey-400"
+                           mdui-dialog="{target: '#control-helper'}">info</i>
+                        <div class="mdui-dialog" id="control-helper">
+                            <div class="mdui-dialog-title">控制说明</div>
+                            <div class="mdui-dialog-content">
+                                <b>运行中无法修改配置,请点击运行中按钮，停止服务先</b><br>
+                            </div>
+                            <div class="mdui-dialog-actions">
+                                <button class="mdui-btn mdui-ripple" mdui-dialog-close="">确认</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="mdui-row">
+                            <div class="mdui-col-md-4">
+                                <div class="mdui-chip" onclick="save_config()">
+                                    <span class="mdui-chip-icon mdui-color-yellow-700"><i
+                                            class="mdui-icon material-icons">settings_backup_restore</i></span>
+                                    <span class="mdui-chip-title">保存</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        mdui.mutation();
+        function message(m_message) {
+            mdui.snackbar(
+                {
+                    message: m_message,
+                    position: "right-top"
+                }
+            )
+        }
+
+        function save_config() {
+
+            let socks5 = document.getElementById('socks5').value;
+            let http = document.getElementById('http').value;
+            let strategy = document.getElementById('strategy').innerText;
+            let route = document.getElementById('route').innerText;
+
+            if(socks5 == ""){
+                message("socks5端口号不正确");
+                return;
+            }
+            if(http == ""){
+                message("http端口号不正确");
+                return;
+            }
+            if(route == ""){
+                message("路由不正确");
+                return;
+            }
+            if(strategy == ""){
+                message("策略不正确");
+                return;
+            }
+
+            $.ajax({
+                url: '/api/changeOthers',
+                headers: {"Content-Type": "application/json;charset=utf-8"},
+                data: JSON.stringify({
+                    "socks5": socks5,
+                    "http": http,
+                    "route": route,
+                    "strategy": strategy
+                }),
+                type: 'post',
+                dataType: 'json',
+                success: function (data) { //后端返回的json数据（此处data为json对象）
+
+                    if (data['status'] == "Failure") {
+                        message("你填写的数据有误")
+                    } else {
+                        message("保存配置成功")
+                        window.location.href = data['url'];
+                    }
+                },
+                error: function () {
+                    alert('异常')
+                }
+            });
+
+
+        }
+    </script>
+{% endblock %}
+

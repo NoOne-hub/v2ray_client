@@ -88,6 +88,7 @@
                 <a href="{{ url_for('config') }}" class="mdui-list-item mdui-ripple ">添加/修改连接</a>
                 <a href="{{ url_for('Subscription') }}" class="mdui-list-item mdui-ripple">订阅管理</a>
                 <a href="{{ url_for('log') }}" class="mdui-list-item mdui-ripple">运行日志</a>
+                <a href="{{ url_for('others') }}" class="mdui-list-item mdui-ripple">其余配置</a>
             </div>
             {% elif title == "添加/修改连接" %}
             <div class="mdui-collapse-item-body mdui-list">
@@ -95,6 +96,7 @@
                 <a href="{{ url_for('config') }}" class="mdui-list-item mdui-ripple mdui-list-item-active">添加/修改连接</a>
                 <a href="{{ url_for('Subscription') }}" class="mdui-list-item mdui-ripple">订阅管理</a>
                 <a href="{{ url_for('log') }}" class="mdui-list-item mdui-ripple">运行日志</a>
+                <a href="{{ url_for('others') }}" class="mdui-list-item mdui-ripple">其余配置</a>
             </div>
             {% elif title == "订阅管理" %}
             <div class="mdui-collapse-item-body mdui-list">
@@ -102,13 +104,23 @@
                 <a href="{{ url_for('config') }}" class="mdui-list-item mdui-ripple">添加/修改连接</a>
                 <a href="{{ url_for('Subscription') }}" class="mdui-list-item mdui-ripple mdui-list-item-active">订阅管理</a>
                 <a href="{{ url_for('log') }}" class="mdui-list-item mdui-ripple">运行日志</a>
+                <a href="{{ url_for('others') }}" class="mdui-list-item mdui-ripple">其余配置</a>
+            </div>
+            {% elif title == "运行日志" %}
+            <div class="mdui-collapse-item-body mdui-list">
+                <a href="{{ url_for('index') }}" class="mdui-list-item mdui-ripple">配置选择</a>
+                <a href="{{ url_for('config') }}" class="mdui-list-item mdui-ripple">添加/修改连接</a>
+                <a href="{{ url_for('Subscription') }}" class="mdui-list-item mdui-ripple">订阅管理</a>
+                <a href="{{ url_for('log') }}" class="mdui-list-item mdui-ripple mdui-list-item-active">运行日志</a>
+                <a href="{{ url_for('others') }}" class="mdui-list-item mdui-ripple">其余配置</a>
             </div>
             {% else %}
             <div class="mdui-collapse-item-body mdui-list">
                 <a href="{{ url_for('index') }}" class="mdui-list-item mdui-ripple">配置选择</a>
                 <a href="{{ url_for('config') }}" class="mdui-list-item mdui-ripple">添加/修改连接</a>
                 <a href="{{ url_for('Subscription') }}" class="mdui-list-item mdui-ripple">订阅管理</a>
-                <a href="{{ url_for('log') }}" class="mdui-list-item mdui-ripple mdui-list-item-active">运行日志</a>
+                <a href="{{ url_for('log') }}" class="mdui-list-item mdui-ripple ">运行日志</a>
+                <a href="{{ url_for('others') }}" class="mdui-list-item mdui-ripple mdui-list-item-active">其余配置</a>
             </div>
             {% endif %}
         </div>

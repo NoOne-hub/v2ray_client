@@ -3,7 +3,7 @@ from flask import render_template, url_for, request
 import json
 import subprocess
 from urllib.parse import unquote
-from app.models import v2rayConfig, AlchemyEncoder
+from app.models import v2rayConfig, AlchemyEncoder, Others
 from app import db
 from app.v2rayControl.vmess2json import gen_client
 from app.models import Parse, subscription
@@ -103,6 +103,14 @@ def set_message(code=200, url=""):
         }
 
 
+def get_info():
+    with open("config/v2ray/others.json") as v2ray_config:
+        json_content = json.load(v2ray_config)
+        json_dump = json.dumps(json_content)
+
+    return json_dump
+
+
 '''
 主界面路由部分
 '''
@@ -139,10 +147,18 @@ def log():
     return render_template('log.html', title="运行日志")
 
 
+@app.route('/others')
+def others():
+    otherConfig = Others.get_all()
+    socks5 = otherConfig['INBOUNDS'].split(',')[0][6:]
+    http = otherConfig['INBOUNDS'].split(',')[1][5:]
+    return render_template('others.html', title="其余配置", config=otherConfig, socks5=socks5, http=http)
+
+
 @app.route('/get_access_log')
 def get_access_log():
     try:
-        with open(app.config['V2RAY_ACCESS_LOG']) as f:
+        with open(Others.get_all()['V2RAY_ACCESS_LOG']) as f:
             content = f.read().split("\n")
             min_length = min(20, len(content))
             content = content[-min_length:]
@@ -157,7 +173,7 @@ def get_access_log():
 @app.route('/get_error_log')
 def get_error_log():
     try:
-        with open(app.config['V2RAY_ERROR_LOG']) as f:
+        with open(Others.get_all()['V2RAY_ERROR_LOG']) as f:
             content = f.read().split("\n")
             min_length = min(20, len(content))
             content = content[-min_length:]
@@ -362,3 +378,36 @@ def vmess2config():
     db.session.add(v2)
     db.session.commit()
     return set_message(200)
+
+
+@app.route('/api/changeOthers', methods=["GET", "POST"])
+def changeOthers():
+    data = json.loads(request.get_data(as_text=True))
+    print(data)
+    # = "socks:10808,http:10809"
+    socks = int(data['socks5'])
+    http = int(data['http'])
+
+    if socks <= 0 or socks > 65535:
+        return set_message(400)
+    if http <= 0 or http > 65535:
+        return set_message(400)
+    route = data['route']
+    strategy = data['strategy']
+
+    Others.set_info('INBOUNDS', "socks:" + str(socks) + "," + "http:" + str(http))
+
+    # 路由处理
+    if route == "全局":
+        Others.set_info('RULES', 'all')
+    elif route == "绕过局域网地址":
+        Others.set_info('RULES', 'bpL')
+    elif route == "绕过大陆地址":
+        Others.set_info('RULES', 'bpA')
+    else:
+        Others.set_info('RULES', 'bpLAA')
+
+    # 策略处理
+    Others.set_info('DOMAINSTRATEGY', strategy)
+    restart()
+    return set_message(200, url_for('index'))

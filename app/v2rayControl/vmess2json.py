@@ -6,6 +6,7 @@ import hashlib
 import urllib.request
 import urllib.parse
 from app import app
+from app.models import Others
 
 vmscheme = "vmess://"
 ssscheme = "ss://"
@@ -60,34 +61,7 @@ TPL["CLIENT"] = """
         ]
     },
     "routing": {
-        "strategy": "rules",
-        "settings": {
-            "domainStrategy": "IPIfNonMatch",
-            "rules": [
-                {
-                    "type": "field",
-                    "ip": [
-                        "0.0.0.0/8",
-                        "10.0.0.0/8",
-                        "100.64.0.0/10",
-                        "127.0.0.0/8",
-                        "169.254.0.0/16",
-                        "172.16.0.0/12",
-                        "192.0.0.0/24",
-                        "192.0.2.0/24",
-                        "192.168.0.0/16",
-                        "198.18.0.0/15",
-                        "198.51.100.0/24",
-                        "203.0.113.0/24",
-                        "::1/128",
-                        "fc00::/7",
-                        "fe80::/10"
-                    ],
-                    "outboundTag": "direct"
-                }
-            ]
-                }
-            }
+    }
 }
 """
 
@@ -306,6 +280,86 @@ TPL["out_ss"] = """
 }
 """
 
+TPL["bpL"] = """
+            [
+                {
+                    "type": "field",
+                    "ip": [
+                        "0.0.0.0/8",
+                        "10.0.0.0/8",
+                        "100.64.0.0/10",
+                        "127.0.0.0/8",
+                        "169.254.0.0/16",
+                        "172.16.0.0/12",
+                        "192.0.0.0/24",
+                        "192.0.2.0/24",
+                        "192.168.0.0/16",
+                        "198.18.0.0/15",
+                        "198.51.100.0/24",
+                        "203.0.113.0/24",
+                        "::1/128",
+                        "fc00::/7",
+                        "fe80::/10"
+                    ],
+                    "outboundTag": "direct"
+                }
+            ]
+"""
+
+TPL["bpA"] = """
+            [
+                {
+                    "type": "chinasites",
+                    "outboundTag": "direct"
+                },
+                {
+                    "type": "chinaip",
+                    "outboundTag": "direct"
+                }
+            ]
+"""
+
+TPL["bpLAA"] = """
+            [
+                {
+                    "type": "field",
+                    "ip": [
+                        "0.0.0.0/8",
+                        "10.0.0.0/8",
+                        "100.64.0.0/10",
+                        "127.0.0.0/8",
+                        "169.254.0.0/16",
+                        "172.16.0.0/12",
+                        "192.0.0.0/24",
+                        "192.0.2.0/24",
+                        "192.168.0.0/16",
+                        "198.18.0.0/15",
+                        "198.51.100.0/24",
+                        "203.0.113.0/24",
+                        "::1/128",
+                        "fc00::/7",
+                        "fe80::/10",
+                        "geoip:cn"
+                    ],
+                    "domain": [
+                        "geosite:cn"
+                    ],
+                    "outboundTag": "direct"
+                },
+                {
+                    "type": "chinasites",
+                    "outboundTag": "direct"
+                },
+                {
+                    "type": "chinaip",
+                    "outboundTag": "direct"
+                }
+            ]
+"""
+
+TPL["all"] = """
+[]
+"""
 
 def parseLink(link):
     if link.startswith(ssscheme):
@@ -485,6 +539,11 @@ def fill_quic(_c, _v):
     _c["outbounds"][0]["streamSettings"]["quicSettings"] = quics
     return _c
 
+def fill_strategy(_c, _v):
+    routing = load_TPL("routing")
+    routing["domainStrategy"] = _v["test"]
+    _c[""]
+
 
 def vmess2client(_t, _v):
     _net = _v["net"]
@@ -512,7 +571,7 @@ def vmess2client(_t, _v):
         raise Exception("this link seem invalid to the script, please report to dev.")
 
 
-def fill_inbounds(_c, _v="socks:1080,http:1081"):
+def fill_inbounds(_c, _v="socks:10808,http:10809"):
     _ins = _v.split(",")
     for _in in _ins:
         _proto, _port = _in.split(":", maxsplit=1)
@@ -588,12 +647,24 @@ def fill_dns(_c, localdns=""):
 
     return _c
 
+def fill_domainStrategy(_c, type):
+    _c["routing"]["domainStrategy"] = type
+    return _c
+
+def fill_rules(_c, type):
+    rules = load_TPL(type)
+    _c["routing"]['rules'] = rules
+    return _c
+
 
 def gen_client(vc):
+    Others.get_all()
     cc = vmess2client(load_TPL("CLIENT"), vc)
-    cc = fill_dns(cc, app.config['LOCALDNS'])
-    cc = fill_inbounds(cc, app.config['INBOUNDS'])
-    cc['log']['access'] = app.config['V2RAY_ACCESS_LOG']
-    cc['log']['error'] = app.config['V2RAY_ERROR_LOG']
-    with open(app.config['V2RAY_PATH'], "w+") as f:
+    cc = fill_dns(cc, Others.get_all()['LOCALDNS'])
+    cc = fill_inbounds(cc, Others.get_all()['INBOUNDS'])
+    cc = fill_domainStrategy(cc, Others.get_all()['DOMAINSTRATEGY'])
+    cc = fill_rules(cc, Others.get_all()['RULES'])
+    cc['log']['access'] = Others.get_all()['V2RAY_ACCESS_LOG']
+    cc['log']['error'] = Others.get_all()['V2RAY_ERROR_LOG']
+    with open(Others.get_all()['V2RAY_PATH'], "w+") as f:
         json.dump(cc, f, indent=2)

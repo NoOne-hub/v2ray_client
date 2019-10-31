@@ -1,0 +1,9 @@
+{
+  "DOMAINSTRATEGY": "IPOnDemand",
+  "RULES": "bpLAA",
+  "V2RAY_PATH": "/etc/v2ray/config.json",
+  "LOCALDNS": "8.8.8.8",
+  "INBOUNDS": "socks:21,http:10809",
+  "V2RAY_ERROR_LOG": "/var/log/v2ray/error.log",
+  "V2RAY_ACCESS_LOG": "/var/log/v2ray/access.log"
+}
