@@ -458,7 +458,7 @@
             }
 
             $.ajax({
-                url: '/api/generate_config',
+                url: './api/generate_config',
                 headers: {"Content-Type": "application/json;charset=utf-8"},
                 {% if v2ray %}
                     data: JSON.stringify({

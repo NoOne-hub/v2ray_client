@@ -52,7 +52,7 @@
                             </a>
                         </li>
                         <li class="mdui-menu-item">
-                            <a href="{{ url_for('config') }}" class="mdui-ripple">
+                            <a href=".{{ url_for('config') }}" class="mdui-ripple">
                                 <i class="mdui-menu-item-icon mdui-icon material-icons">mode_edit</i>手动输入[Vmess]
                             </a>
                         </li>
@@ -62,12 +62,12 @@
                             class="mdui-icon material-icons">menu</i></a>
                     <span class="mdui-typo-title ">配置管理面板</span>
                     {% if prev_url %}
-                        <td><a href="{{ prev_url }}">上一页</a></td>
+                        <td><a href=".{{ prev_url }}">上一页</a></td>
                     {% else %}
                         <td><a href = "javascript:;" onclick = "alert_first()">上一页</a></td>
                     {% endif %}
                     {% if next_url %}
-                        <td><a href="{{ next_url }}">下一页</a></td>
+                        <td><a href=".{{ next_url }}">下一页</a></td>
                     {% else %}
                         <td><a href = "javascript:;" onclick = "alert_last()">下一页</a></td>
                     {% endif %}
@@ -182,7 +182,7 @@
         function start_service(newsId) {
             $.ajax({
                 method: 'POST',
-                url: '/api/start_service',
+                url: './api/start_service',
                 data: {
                     id: newsId,
                 },
@@ -212,7 +212,7 @@
         function stop_service(newsId) {
             $.ajax({
                 method: 'POST',
-                url: '/api/stop_service',
+                url: './api/stop_service',
                 data: {
                     id: newsId,
                 },
@@ -250,7 +250,7 @@
         function deleteRowById(newsId) {
             $.ajax({
                 method: 'POST',
-                url: '/api/deleteById',
+                url: './api/deleteById',
                 data: {
                     id: newsId,
                 },
@@ -274,7 +274,7 @@
             }
             $.ajax({
                 method: 'POST',
-                url: '/api/vmess2config',
+                url: './api/vmess2config',
                 data: {
                     vmess: vmess
                 },
@@ -296,7 +296,7 @@
         function editRowById(newsId) {
             $.ajax({
                 method: 'POST',
-                url: '/api/editById',
+                url: './api/editById',
                 data: {
                     id: newsId,
                 },

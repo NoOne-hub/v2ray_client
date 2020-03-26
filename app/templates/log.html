@@ -47,8 +47,8 @@
     <script type="text/javascript">
 
         function timer() {
-            $('#log-access-content').load('/get_access_log');
-            $('#log-error-content').load('/get_error_log');
+            $('#log-access-content').load('./get_access_log');
+            $('#log-error-content').load('./get_error_log');
             var t = setTimeout("timer()", 1500);
         }
 

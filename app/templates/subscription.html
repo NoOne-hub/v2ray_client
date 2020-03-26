@@ -177,7 +177,7 @@
         function editRowById(id) {
             $.ajax({
                 method: 'POST',
-                url: '/api/editSubscription',
+                url: './api/editSubscription',
                 data: JSON.stringify({
                     num: id,
                     remarks: document.getElementById('edit_remarks').value,
@@ -209,7 +209,7 @@
         function start_service(newsId) {
             $.ajax({
                 method: 'POST',
-                url: '/api/updateSub',
+                url: './api/updateSub',
                 data: {
                     id: newsId,
                 },
@@ -246,7 +246,7 @@
         function deleteRowById(newsId) {
             $.ajax({
                 method: 'POST',
-                url: '/api/deleteSub',
+                url: './api/deleteSub',
                 data: {
                     id: newsId,
                 },
@@ -272,7 +272,7 @@
             }
             $.ajax({
                 method: 'POST',
-                url: '/api/addSubscription',
+                url: './api/addSubscription',
                 data: JSON.stringify({
                     remarks: remarks,
                     addr: addr
