@@ -266,8 +266,11 @@ def updateSub():
     for i in old_sub:
         db.session.delete(i)
     for i in result:
-        v2 = json2config(i, sub_url)
-        db.session.add(v2)
+        try:
+            v2 = json2config(i, sub_url)
+            db.session.add(v2)
+        except KeyError:
+            continue
     db.session.commit()
     return set_message(200, url_for('index'))
 
