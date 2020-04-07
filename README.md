@@ -1,6 +1,7 @@
 # v2ray_client
 ## 简介
 
+
 一个基于Web的v2ray客户端控制面板
 
 ![1](https://github.com/NoOne-hub/v2ray_client/blob/master/images/1.png
@@ -39,6 +40,11 @@
 具体写入的日志和配置文件在config.py里自行修改
 
 
+## 免责声明
+
+本项目只是在闲暇之际对flask框架进行的学习,只为个人linux使用,其余事项与本人概无关系!
+本项目只是在闲暇之际对flask框架进行的学习,只为个人linux使用,其余事项与本人概无关系!
+本项目只是在闲暇之际对flask框架进行的学习,只为个人linux使用,其余事项与本人概无关系!
 
 #### install_test.sh 是热心网友提供的一键安装脚本，会自动安装环境,下面两个安装脚本都一样的,下载方式不同而已,也可以进行测试安装.
 
